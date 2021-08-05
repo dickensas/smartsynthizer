@@ -1,0 +1,15 @@
+window
+{
+    border-radius: 1px 1px 0 0;
+    border-width: 0px;
+    box-shadow: none;
+    margin: 1px;
+    border-color: transparent;
+    font-size:25px;
+}
+
+window:backdrop
+{
+    background: transparent;
+    opacity: 0;
+}
