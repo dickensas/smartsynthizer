@@ -194,6 +194,18 @@ fun key_pressed (
     return GDK_EVENT_PROPAGATE
 }
 
+fun left_mouse_pressed (
+                 gesture: CPointer<GtkGestureClick>,
+                 n_press: Int,
+                 x: Double,
+                 y: Double,
+                 widget: CPointer<GtkWidget>
+):gboolean {
+    println("${n_press},${x},${y}")
+    gtk_widget_grab_focus(widget)
+    return GDK_EVENT_STOP
+}
+
 fun key_released (
                  controller: CPointer<GtkEventController>,
                  keyval: guint,
@@ -204,6 +216,46 @@ fun key_released (
     keyStates.put(keyval,false)
     gtk_widget_queue_draw(keys!!.reinterpret())
     return GDK_EVENT_PROPAGATE
+}
+
+fun toggle_edit(togglebutton: CPointer<GtkToggleButton>) {
+    var button_state = gtk_toggle_button_get_active(togglebutton);
+    
+    gtk_widget_set_focusable(ui_step_math!!.reinterpret(), button_state)
+    gtk_widget_set_can_focus(ui_step_math!!.reinterpret(), button_state)
+    gtk_editable_set_editable(ui_step_math!!.reinterpret(), button_state)
+    
+    gtk_widget_set_focusable(ui_sound_math!!.reinterpret(), button_state)
+    gtk_widget_set_can_focus(ui_sound_math!!.reinterpret(), button_state)
+    gtk_editable_set_editable(ui_sound_math!!.reinterpret(), button_state)
+    
+    gtk_widget_set_focusable(ui_envelop1_math!!.reinterpret(), button_state)
+    gtk_widget_set_can_focus(ui_envelop1_math!!.reinterpret(), button_state)
+    gtk_editable_set_editable(ui_envelop1_math!!.reinterpret(), button_state)
+    
+    gtk_widget_set_focusable(ui_envelop2_math!!.reinterpret(), button_state)
+    gtk_widget_set_can_focus(ui_envelop2_math!!.reinterpret(), button_state)
+    gtk_editable_set_editable(ui_envelop2_math!!.reinterpret(), button_state)
+    
+    gtk_widget_set_focusable(ui_envelop3_math!!.reinterpret(), button_state)
+    gtk_widget_set_can_focus(ui_envelop3_math!!.reinterpret(), button_state)
+    gtk_editable_set_editable(ui_envelop3_math!!.reinterpret(), button_state)
+    
+    gtk_widget_set_focusable(ui_envelop4_math!!.reinterpret(), button_state)
+    gtk_widget_set_can_focus(ui_envelop4_math!!.reinterpret(), button_state)
+    gtk_editable_set_editable(ui_envelop4_math!!.reinterpret(), button_state)
+    
+    gtk_widget_set_focusable(ui_final_math!!.reinterpret(), button_state)
+    gtk_widget_set_can_focus(ui_final_math!!.reinterpret(), button_state)
+    gtk_editable_set_editable(ui_final_math!!.reinterpret(), button_state)
+}
+
+fun math_edit_toggled(
+                 togglebutton: CPointer<GtkToggleButton>, 
+                 text_label: CPointer<GtkLabel>
+)
+{
+    toggle_edit(togglebutton)
 }
 
 fun activate_callback(app:CPointer<GtkApplication>?) {
@@ -227,6 +279,8 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     ui_envelop3_math = gtk_builder_get_object(builder, "envelop3_math")
     ui_envelop4_math = gtk_builder_get_object(builder, "envelop4_math")
     ui_final_math = gtk_builder_get_object(builder, "final_math")
+    var ui_math_toggle = gtk_builder_get_object(builder, "math_toggle")
+    toggle_edit(ui_math_toggle!!.reinterpret())
     
     gtk_drawing_area_set_draw_func(
         keys!!.reinterpret(),
@@ -239,18 +293,53 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
         null
     )
     
-    var controller = gtk_event_controller_key_new()
+    var keyboard_controller = gtk_event_controller_key_new()
+    var focus_controller = gtk_event_controller_focus_new()
+    var motion_controller = gtk_gesture_click_new()
+    gtk_gesture_single_set_button (motion_controller!!.reinterpret(), 1);
+    
+    g_signal_connect_data (
+        ui_math_toggle!!.reinterpret(), 
+        "toggled", 
+        staticCFunction {
+            togglebutton: CPointer<GtkToggleButton>, 
+            text_label: CPointer<GtkLabel>
+            -> math_edit_toggled(togglebutton, text_label)
+        }.reinterpret(),
+        ui_math_toggle!!.reinterpret(), 
+        null, 
+        0u
+    )
+    
     g_object_set_data_full (
         window!!.reinterpret(), 
         "controller", 
-        g_object_ref(controller!!.reinterpret()), 
+        g_object_ref(keyboard_controller!!.reinterpret()), 
+        staticCFunction {
+            obj: gpointer? -> g_object_unref(obj)
+        }.reinterpret()
+    )
+    
+    g_object_set_data_full (
+        keys!!.reinterpret(), 
+        "controller", 
+        g_object_ref(focus_controller!!.reinterpret()), 
+        staticCFunction {
+            obj: gpointer? -> g_object_unref(obj)
+        }.reinterpret()
+    )
+    
+    g_object_set_data_full (
+        keys!!.reinterpret(), 
+        "controller", 
+        g_object_ref(motion_controller!!.reinterpret()), 
         staticCFunction {
             obj: gpointer? -> g_object_unref(obj)
         }.reinterpret()
     )
     
     g_signal_connect_data (
-        controller!!.reinterpret(), 
+        keyboard_controller!!.reinterpret(), 
         "key-pressed", 
         staticCFunction {
              controller: CPointer<GtkEventController>,
@@ -266,13 +355,13 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
                 entry
              )
         }.reinterpret(), 
-        window!!.reinterpret(), 
+        keys!!.reinterpret(), 
         null, 
         0u
     )
     
     g_signal_connect_data (
-        controller!!.reinterpret(), 
+        keyboard_controller!!.reinterpret(), 
         "key-released", 
         staticCFunction {
              controller: CPointer<GtkEventController>,
@@ -288,14 +377,40 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
                 entry
              )
         }.reinterpret(), 
-        window!!.reinterpret(), 
+        keys!!.reinterpret(), 
+        null, 
+        0u
+    )
+    
+    g_signal_connect_data (
+        motion_controller!!.reinterpret(), 
+        "pressed", 
+        staticCFunction {
+             gesture: CPointer<GtkGestureClick>,
+             n_press: Int,
+             x: Double,
+             y: Double,
+             widget: CPointer<GtkWidget>
+             -> left_mouse_pressed(gesture, n_press, x, y, widget)
+        }.reinterpret(), 
+        keys!!.reinterpret(), 
         null, 
         0u
     )
     
     gtk_widget_add_controller (
         window!!.reinterpret(), 
-        controller!!.reinterpret()
+        keyboard_controller!!.reinterpret()
+    )
+    
+    gtk_widget_add_controller (
+        keys!!.reinterpret(), 
+        focus_controller!!.reinterpret()
+    )
+    
+    gtk_widget_add_controller (
+        keys!!.reinterpret(), 
+        motion_controller!!.reinterpret()
     )
     
     g_object_unref(builder)

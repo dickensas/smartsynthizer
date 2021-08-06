@@ -1,0 +1,27 @@
+First Version 1.0.0.0
+
+Text boxes editable
+Window size fixed
+Window title changed
+Font size increased via CSS
+Labels made bold via CSS
+
+First Draft 0.0.0.1
+
+The code still work in progress
+
+You have to press computer keyboard,
+
+z,s,x,d,c,v,g,b,h,n..... etc to make the notes
+
+Mouse click still under progress
+
+Resizing the window will not change the size of the keyboard
+
+As of now, while the application running you have right click and copy paste the formula which could possible generate the sound which you wanted to acheive 
+
+only two envelopes currently you can modify, third and fourth still under progress
+
+only right click selectAll and copy and paste will work, typing inside the text box will not work
+
+data_cf.h is modifed and distributed with code due to bool data type not available in C

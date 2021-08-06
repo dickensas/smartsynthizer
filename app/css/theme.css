@@ -13,3 +13,8 @@ window:backdrop
     background: transparent;
     opacity: 0;
 }
+
+label
+{
+    font-weight: bold;
+}

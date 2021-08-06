@@ -10,21 +10,7 @@ The piano key buttons are made from SVG only, if you modify the SVG take care of
 
 #Work In Progress
 
-The code still work in progress
-
-You have to press computer keyboard,
-
-z,s,x,d,c,v,g,b,h,n..... etc to make the notes
-
-Mouse click still under progress
-
-Resizing the window will not change the size of the keyboard
-
-As of now, while the application running you have right click and copy paste the formula which could possible generate the sound which you wanted to acheive 
-
-only two envelopes currently you can modify, third and fourth still under progress
-
-only right click selectAll and copy and paste will work, typing inside the text box will not work
+Please read ChangeLog.txt
 
 #Formula Explanation
 
@@ -50,9 +36,6 @@ current sound quality is fixed to 44100<br/>
 current sound duration is fixed to 1 second<br/>
 the "1.0" in the default formula is for 1 second<br/>
 current amplification value is given in formula 10000.0 which can be changed via right click copy paste<br/>
-
-#Note:
-data_cf.h is modifed and distributed with code
 
 ## Usage
 

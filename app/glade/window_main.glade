@@ -3,16 +3,20 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkWindow" id="window_main">
-    <property name="can-focus">False</property>
-    <property name="title" translatable="yes">Example Glade Window</property>
+    <property name="title" translatable="yes">SmartSynthizer</property>
     <property name="default-width">965</property>
-    <property name="default-height">480</property>
+    <property name="default-height">780</property>
+    <property name="width-request">965</property>
+    <property name="height-request">780</property>
+    <property name="can-focus">True</property>
+    <property name="halign">start</property>
+    <property name="valign">start</property>
     <child>
       <object class="GtkBox" id="main_box">
         <property name="visible">True</property>
         <property name="can-focus">True</property>
         <property name="orientation">vertical</property>
-        <property name="homogeneous">True</property>
+        <property name="homogeneous">False</property>
         <child>
           <object class="GtkBox" id="math_box">
               <property name="visible">True</property>
@@ -24,6 +28,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Note Offset Math</property>
+                    <property name="halign">start</property>
                   </object>
               </child>
               <child>
@@ -38,6 +43,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Main Sound Math</property>
+                    <property name="halign">start</property>
                   </object>
               </child>
               <child>
@@ -52,6 +58,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Envelop1 Math</property>
+                    <property name="halign">start</property>
                   </object>
               </child>
               <child>
@@ -66,6 +73,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Envelop2 Math</property>
+                    <property name="halign">start</property>
                   </object>
               </child>
               <child>
@@ -80,6 +88,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Envelop3 Math</property>
+                    <property name="halign">start</property>
                   </object>
               </child>
               <child>
@@ -93,6 +102,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Envelop4 Math</property>
+                    <property name="halign">start</property>
                   </object>
               </child>
               <child>
@@ -106,6 +116,7 @@
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Final Math</property>
+                    <property name="halign">start</property>
                   </object>
               </child>
               <child>
@@ -115,6 +126,14 @@
                     <property name="text" translatable="yes">10000.0 * (${sound}*${envelop1}*${envelop2})</property>
                   </object>
               </child>
+              <child>
+                  <object class="GtkToggleButton" id="math_toggle">
+                    <property name="label" translatable="yes">Edit Math</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                  </object>
+              </child>
           </object>
         </child>
         <child>
@@ -122,6 +141,9 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="halign">fill</property>
+            <property name="valign">start</property>
+            <property name="height-request">250</property>
           </object>
         </child>
       </object>
