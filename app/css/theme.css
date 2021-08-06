@@ -17,4 +17,10 @@ window:backdrop
 label
 {
     font-weight: bold;
+    padding-left: 10px;
+}
+
+entry {
+    margin-left: 10px;
+    margin-right: 10px;
 }

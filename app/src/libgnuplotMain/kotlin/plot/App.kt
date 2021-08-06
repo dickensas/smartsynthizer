@@ -14,6 +14,7 @@ var dev: CPointer<ALCdevice>? = null
 var ctx: CPointer<ALCcontext>? = null
 var app:CPointer<GtkApplication>? = null
 var keys: CPointer<GObject>? = null
+var graph: CPointer<GObject>? = null
 var ui_step_math: CPointer<GObject>? = null
 var ui_sound_math: CPointer<GObject>? = null
 var ui_envelop1_math: CPointer<GObject>? = null
@@ -21,10 +22,23 @@ var ui_envelop2_math: CPointer<GObject>? = null
 var ui_envelop3_math: CPointer<GObject>? = null
 var ui_envelop4_math: CPointer<GObject>? = null
 var ui_final_math: CPointer<GObject>? = null
+var mathParamGlobal: MathParam? = null
 val keyStates: HashMap<UInt, Boolean> = HashMap<UInt, Boolean>()
+lateinit var g_wglarea: CPointer<GtkGLArea>
 
 @ThreadLocal
-val sounds: Array<Int> = arrayOf<Int>(122, 115, 120, 100, 99, 103)
+val sounds: Array<Int> = arrayOf<Int>(
+'z'.code, 's'.code, 'x'.code, 'd'.code, 
+'c'.code, 'v'.code, 'g'.code, 'b'.code,
+'h'.code, 'n'.code, 'j'.code, 'm'.code,
+','.code, 'l'.code, '.'.code, ';'.code,
+'/'.code, 'q'.code, '2'.code, 'w'.code,
+'3'.code, 'e'.code, 'r'.code, '5'.code,
+'t'.code, '6'.code, 'y'.code, '7'.code,
+'u'.code, 'i'.code, '9'.code, 'o'.code,
+'0'.code, 'p'.code, '['.code, '='.code,
+']'.code
+)
 
 data class MathParam(
                  val step: String, 
@@ -34,41 +48,71 @@ data class MathParam(
                  val envelop3: String,
                  val envelop4: String,
                  val finalMath: String,
-                 val key:Int
+                 val key: Int,
+                 var sr: Int = 44100,
+                 var d: Float = 1.0f,
 )
 
-fun sound_thread(mathParam: MathParam) = memScoped {
-  initRuntimeIfNeeded()
-  
+var WINDOW_WIDTH = 957
+var WINDOW_HEIGHT = 124
+
+fun generate_samples(mathParam: MathParam): HMDT? {
     var key2 = sounds.indexOf(mathParam.key)
     val key = "${key2}".toInt()
     
-    var buf = allocArray<ALuintVar>(1)
-    alGenBuffers(1, buf)
-  
-    var d = 1.0f;
-    var sr = 44100;
+    var d = mathParam.d
+    var sr = mathParam.sr
     var y = mgl_create_data_size(sr.toInt(),1,0)
     
-    var step = mathParam.step.replace(oldValue= "\${key}", newValue = key.toString())
-    var sound = mathParam.sound.replace(oldValue= "\${step}", newValue = step)
-    var envelop1 = mathParam.envelop1
-    var envelop2 = mathParam.envelop2
+    var step = mathParam.step
+    .replace(oldValue= "\${key}", newValue = key.toString())
+    .replace(oldValue= "\${d}", newValue = d.toString())
+    .replace(oldValue= "\${sr}", newValue = sr.toString())
+    
+    var sound = mathParam.sound
+    .replace(oldValue= "\${step}", newValue = step)
+    .replace(oldValue= "\${key}", newValue = key.toString())
+    .replace(oldValue= "\${d}", newValue = d.toString())
+    .replace(oldValue= "\${sr}", newValue = sr.toString())
+    
     var finalMath = mathParam.finalMath
     .replace(oldValue= "\${sound}", newValue = sound)
-    .replace(oldValue= "\${envelop1}", newValue = envelop1)
-    .replace(oldValue= "\${envelop2}", newValue = envelop2)
+    .replace(oldValue= "\${envelop1}", newValue = mathParam.envelop1)
+    .replace(oldValue= "\${envelop2}", newValue = mathParam.envelop2)
+    .replace(oldValue= "\${envelop3}", newValue = mathParam.envelop3)
+    .replace(oldValue= "\${envelop4}", newValue = mathParam.envelop4)
+    .replace(oldValue= "\${step}", newValue = step)
+    .replace(oldValue= "\${key}", newValue = key.toString())
+    .replace(oldValue= "\${d}", newValue = d.toString())
+    .replace(oldValue= "\${sr}", newValue = sr.toString())
     
     mgl_data_modify(y, finalMath ,0);
         
+    return y
+}
+
+fun sound_thread(mathParam: MathParam) = memScoped {
+    initRuntimeIfNeeded()
+  
+    var buf = allocArray<ALuintVar>(1)
+    alGenBuffers(1, buf)
+  
+    val y = generate_samples(mathParam)
+    
+    var sr = mathParam.sr
+    
     var samples = ShortArray(sr.toInt())
-    var j = 0.0
     for(i in 0..sr-1) {
        samples[i] = mgl_data_get_value(y,i,0,0).toInt().toShort()
     }
-  
+    
+    
     samples.usePinned {
-       alBufferData(buf[0], AL_FORMAT_MONO16, it.addressOf(0), (sr * sizeOf<ShortVar>()).toInt(), sr.toInt())
+       alBufferData(
+           buf[0], AL_FORMAT_MONO16, 
+           it.addressOf(0), 
+           (sr * sizeOf<ShortVar>()).toInt(), sr.toInt()
+       )
     }
   
     var src = allocArray<ALuintVar>(1)
@@ -76,7 +120,8 @@ fun sound_thread(mathParam: MathParam) = memScoped {
     alSourcei(src[0], AL_BUFFER, buf[0].toInt())
     
     alSourcePlay(src[0])
-  
+    
+    var d = mathParam.d
     sleep(d.toUInt())
   
     alSourcei(src[0], AL_BUFFER, 0)
@@ -90,13 +135,74 @@ fun realize_callback(
     println("realize_callback")
 }
 
-fun render_callback(
+fun render_graph_callback(
                  glarea:CPointer<GtkDrawingArea>?, 
                  cr:CPointer<cairo_t>?
 ) = memScoped {
 
-    println("render_callback")
-    var csurface = cairo_get_target(cr)
+    val gr = mgl_create_graph(WINDOW_WIDTH, WINDOW_HEIGHT)
+    if(mathParamGlobal==null) mathParamGlobal=get_params()
+    val y = generate_samples(mathParamGlobal!!)
+    mgl_set_range_val(gr, "y"[0].toByte(), -15000.0, 15000.0);
+    mgl_plot(gr,y,"b","")
+    mgl_box(gr)
+    
+    var w=mgl_get_width(gr)
+    var h=mgl_get_height(gr)
+    
+    var channels = 4
+    
+    var surface_data = allocArray<UByteVar>((channels * w * h).toInt() * (sizeOf<UByteVar>()).toInt())
+    
+    var buf = mgl_get_rgba(gr);
+    platform.posix.memcpy(surface_data, buf,(channels * w * h).toULong())
+    
+    /*cairo_set_source_rgb(cr, 1.0, 1.0, 1.0)
+    cairo_paint(cr)
+    
+    cairo_set_source_rgb(cr, 1.0, 0.0, 0.0)
+    cairo_rectangle(cr,0.0,0.0,50.0,50.0)
+    cairo_fill(cr)*/
+    
+    var surface = cairo_image_surface_create_for_data (surface_data, CAIRO_FORMAT_ARGB32, w, h, channels * w)
+    cairo_surface_flush(surface)
+    //cairo_mask_surface(cr, surface, 0.0, 0.0)
+    //cairo_set_source_surface(cr, surface, 0.0, 0.0)
+    //cairo_rectangle (cr, 0.0,0.0,150.0,150.0)
+    //cairo_paint (cr)
+    
+    //cairo_surface_destroy(surface)
+    
+    var first = cairo_surface_create_similar(
+      cairo_get_target(cr),
+      CAIRO_CONTENT_COLOR_ALPHA, WINDOW_WIDTH, WINDOW_HEIGHT
+    )
+    
+    var first_cr = cairo_create(first)
+    cairo_set_source_rgb(first_cr, 1.0, 1.0, 1.0)
+    cairo_rectangle(first_cr, 0.0, 0.0, WINDOW_WIDTH.toDouble(), WINDOW_HEIGHT.toDouble())
+    cairo_fill(first_cr)
+  
+    cairo_set_source_surface(first_cr, surface, 0.0, 0.0);
+    cairo_paint(first_cr)
+    
+    cairo_surface_flush(surface)
+    
+    cairo_set_source_surface(cr, first, 0.0, 0.0);
+    cairo_paint(cr)
+    cairo_surface_flush(first)
+    
+    cairo_surface_destroy(first)
+    cairo_surface_destroy(surface)
+    
+    cairo_destroy(first_cr)
+    
+}
+
+fun render_callback(
+                 glarea:CPointer<GtkDrawingArea>?, 
+                 cr: CPointer<cairo_t>?
+) = memScoped {
 
     var error = alloc<CPointerVar<GError>>()
     var handle = rsvg_handle_new_from_file ("svg/key_white.svg", error.ptr);
@@ -108,6 +214,14 @@ fun render_callback(
 var style = """
 .wbutton {
   fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:0.26458334;stroke-miterlimit:4;stroke-dasharray:none
+}
+.wbutton {
+  height: 25px;
+  transform: scaleY(0.5);
+}
+.bbutton {
+  height: 12px;
+  transform: scaleY(0.5);
 }
 """
 
@@ -144,20 +258,8 @@ style = style + """
         throw Error( "Drawing failed" )  
 }
 
-fun key_pressed (
-                 controller: CPointer<GtkEventController>,
-                 keyval: guint,
-                 keycode: guint,
-                 modifiers: GdkModifierType,
-                 entry: CPointer<GtkEntry>
-):gboolean {
-    val isKey = keyStates.get(keyval)
-    
-    if(!(isKey==true) 
-        && sounds.indexOf(keyval.toInt())!=-1 
-        && sounds.indexOf(keyval.toInt())<6){
-        
-        val mathParam = MathParam (
+fun get_params(keyval: Int = 0): MathParam {
+    return MathParam (
             gtk_entry_buffer_get_text(
               gtk_entry_get_buffer(ui_step_math!!.reinterpret())
             )!!.toKString(),
@@ -181,10 +283,26 @@ fun key_pressed (
             )!!.toKString(),
             keyval.toInt()
         )
+}
+
+fun key_pressed (
+                 controller: CPointer<GtkEventController>,
+                 keyval: guint,
+                 keycode: guint,
+                 modifiers: GdkModifierType,
+                 entry: CPointer<GtkEntry>
+):gboolean {
+    val isKey = keyStates.get(keyval)
+    
+    if(!(isKey==true) 
+        && sounds.indexOf(keyval.toInt())!=-1 
+        && sounds.indexOf(keyval.toInt())<sounds.size){
+        
+        mathParamGlobal = get_params(keyval.toInt())
         
         val worker = Worker.start(true, "worker1")
-        worker.execute(TransferMode.UNSAFE, { mathParam }) { data ->
-            sound_thread(data)
+        worker.execute(TransferMode.UNSAFE, { mathParamGlobal }) { data ->
+            sound_thread(data!!)
             null
         }
     }
@@ -201,7 +319,6 @@ fun left_mouse_pressed (
                  y: Double,
                  widget: CPointer<GtkWidget>
 ):gboolean {
-    println("${n_press},${x},${y}")
     gtk_widget_grab_focus(widget)
     return GDK_EVENT_STOP
 }
@@ -248,6 +365,10 @@ fun toggle_edit(togglebutton: CPointer<GtkToggleButton>) {
     gtk_widget_set_focusable(ui_final_math!!.reinterpret(), button_state)
     gtk_widget_set_can_focus(ui_final_math!!.reinterpret(), button_state)
     gtk_editable_set_editable(ui_final_math!!.reinterpret(), button_state)
+    
+    mathParamGlobal=get_params()
+    
+    gtk_widget_queue_draw(graph!!.reinterpret())
 }
 
 fun math_edit_toggled(
@@ -272,6 +393,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
                                provider!!.reinterpret(),
                                GTK_STYLE_PROVIDER_PRIORITY_USER);
     keys = gtk_builder_get_object(builder, "keyboard_keys")
+    graph = gtk_builder_get_object(builder, "math_graph")
     ui_step_math = gtk_builder_get_object(builder, "step_math")
     ui_sound_math = gtk_builder_get_object(builder, "sound_math")
     ui_envelop1_math = gtk_builder_get_object(builder, "envelop1_math")
@@ -285,9 +407,20 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     gtk_drawing_area_set_draw_func(
         keys!!.reinterpret(),
         staticCFunction {
-            glarea:CPointer<GtkDrawingArea>?, 
-            cr:CPointer<cairo_t>?
+            glarea: CPointer<GtkDrawingArea>?, 
+            cr: CPointer<cairo_t>?
             -> render_callback ( glarea, cr )
+        }.reinterpret(),
+        null, 
+        null
+    )
+    
+    gtk_drawing_area_set_draw_func(
+        graph!!.reinterpret(),
+        staticCFunction {
+            glarea: CPointer<GtkDrawingArea>?,
+            cr: CPointer<cairo_t>?
+            -> render_graph_callback ( glarea, cr )
         }.reinterpret(),
         null, 
         null

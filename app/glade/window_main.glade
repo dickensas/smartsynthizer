@@ -134,6 +134,16 @@
                     <property name="receives-default">True</property>
                   </object>
               </child>
+              <child>
+                  <object class="GtkDrawingArea" id="math_graph">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="halign">fill</property>
+                    <property name="valign">start</property>
+                    <property name="height-request">124</property>
+                  </object>
+              </child>
           </object>
         </child>
         <child>
@@ -143,7 +153,7 @@
             <property name="receives-default">True</property>
             <property name="halign">fill</property>
             <property name="valign">start</property>
-            <property name="height-request">250</property>
+            <property name="height-request">124</property>
           </object>
         </child>
       </object>
