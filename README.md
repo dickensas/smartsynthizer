@@ -14,10 +14,10 @@ Please read ChangeLog.txt
 
 # Formula Explanation
 
-${key} 
-pressing 'a' in computer keyboard puts zero '0'<br/>
+${key} <br/>
+pressing 'z' in computer keyboard puts zero '0'<br/>
 pressing 's' in computer keyboard puts one '1'<br/>
-and so on
+and so on <br/>
 
 ${step} is the value in "Note Offset Math"<br/>
 ${sound} is the value in "Main Sound Math"<br/>
@@ -26,10 +26,10 @@ ${envelop2} is the value in "Envelop2 Math"<br/>
 ${envelop3} is the value in "Envelop3 Math"<br/>
 ${envelop4} is the value in "Envelop4 Math"<br/>
 
-All MathGL functions will work,
+All MathGL functions will work,<br/>
 
 x -- is the values in x axis<br/>
-y -- is the values in y axis
+y -- is the values in y axis<br/>
 
 current frequency is fixed to 440 for a piano sound<br/>
 current sound quality is fixed to 44100<br/>
@@ -59,3 +59,4 @@ Then execute bellow task to start the OpenGL application
 
 The UI will appear with piano buttons
 
+Press you keyboard buttons and enjoy the tones
