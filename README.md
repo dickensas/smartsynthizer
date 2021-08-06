@@ -1,18 +1,18 @@
-#SythSmart
+# SmartSynthizer
 
-SynthSmart is an initiative to do low level mathematical interface for music instruments synthesizer
+SmartSynthizer is an initiative to do low level mathematical interface for music instruments synthesizer
 
-#Libraries
+# Libraries
 
 it uses MathGL, OpenAL, Glade, RSVG and GTK4
 
 The piano key buttons are made from SVG only, if you modify the SVG take care of keeping the ID of the tags intact otherwise the buttons will not hightlight
 
-#Work In Progress
+# Work In Progress
 
 Please read ChangeLog.txt
 
-#Formula Explanation
+# Formula Explanation
 
 ${key} 
 pressing 'a' in computer keyboard puts zero '0'<br/>
@@ -58,3 +58,4 @@ Then execute bellow task to start the OpenGL application
      .\gradlew runReleaseExecutableLibgnuplot
 
 The UI will appear with piano buttons
+
