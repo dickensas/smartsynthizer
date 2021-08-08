@@ -57,6 +57,14 @@ kotlin {
                }
             }
             
+            val rtmidi by creating {
+               includeDirs {
+                  allHeaders(
+                     "C:\\msys64\\mingw64\\include"
+                  )
+               }
+            }
+            
             val synth by creating {}
         }
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.38"/>
   <object class="GtkWindow" id="window_main">
     <property name="title" translatable="yes">SmartSynthizer</property>
     <property name="default-width">965</property>
@@ -18,143 +18,227 @@
         <property name="orientation">vertical</property>
         <property name="homogeneous">False</property>
         <child>
-          <object class="GtkBox" id="math_box">
-              <property name="visible">True</property>
-              <property name="can-focus">True</property>
-              <property name="orientation">vertical</property>
-              <property name="homogeneous">False</property>
-              <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Note Offset Math</property>
-                    <property name="halign">start</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkEntry" id="step_math">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="text" translatable="yes">(440.0*pow(2.0,${key}/12.0))</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Main Sound Math</property>
-                    <property name="halign">start</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkEntry" id="sound_math">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="text" translatable="yes">sin(2.0*pi*${step}*x)</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Envelop1 Math</property>
-                    <property name="halign">start</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkEntry" id="envelop1_math">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="text" translatable="yes">((2.0/pi)*asin(sin(8*pi*x/1.0)))</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Envelop2 Math</property>
-                    <property name="halign">start</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkEntry" id="envelop2_math">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="text" translatable="yes">sin((pi*x)/1.0)</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Envelop3 Math</property>
-                    <property name="halign">start</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkEntry" id="envelop3_math">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Envelop4 Math</property>
-                    <property name="halign">start</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkEntry" id="envelop4_math">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Final Math</property>
-                    <property name="halign">start</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkEntry" id="final_math">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="text" translatable="yes">10000.0 * (${sound}*${envelop1}*${envelop2})</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkToggleButton" id="math_toggle">
-                    <property name="label" translatable="yes">Edit Math</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                  </object>
-              </child>
-              <child>
-                  <object class="GtkDrawingArea" id="math_graph">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">fill</property>
-                    <property name="valign">start</property>
-                    <property name="height-request">124</property>
-                  </object>
-              </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkDrawingArea" id="keyboard_keys">
-            <property name="visible">True</property>
+        <object class="GtkBox">
             <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="halign">fill</property>
-            <property name="valign">start</property>
-            <property name="height-request">124</property>
-          </object>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkStackSwitcher">
+                <property name="can-focus">True</property>
+                <property name="stack">main_content</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStack" id="main_content">
+                <property name="can-focus">True</property>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">Home</property>
+                    <property name="title" translatable="yes">Home</property>
+                    <property name="child">
+                      <object class="GtkBox" id="synth_box">
+                         <property name="visible">True</property>
+                         <property name="can-focus">True</property>
+                         <property name="orientation">vertical</property>
+                         <property name="homogeneous">False</property>
+                         <child>
+                          <object class="GtkBox" id="math_box">
+                              <property name="visible">True</property>
+                              <property name="can-focus">True</property>
+                              <property name="orientation">vertical</property>
+                              <property name="homogeneous">False</property>
+                              <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">Note Offset Math</property>
+                                    <property name="halign">start</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkEntry" id="step_math">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="text" translatable="yes">(440.0*pow(2.0,${key}/12.0))</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">Main Sound Math</property>
+                                    <property name="halign">start</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkEntry" id="sound_math">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="text" translatable="yes">sin(2.0*pi*${step}*x)</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">Envelop1 Math</property>
+                                    <property name="halign">start</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkEntry" id="envelop1_math">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="text" translatable="yes">((2.0/pi)*asin(sin(8*pi*x/1.0)))</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">Envelop2 Math</property>
+                                    <property name="halign">start</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkEntry" id="envelop2_math">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="text" translatable="yes">sin((pi*x)/1.0)</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">Envelop3 Math</property>
+                                    <property name="halign">start</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkEntry" id="envelop3_math">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">Envelop4 Math</property>
+                                    <property name="halign">start</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkEntry" id="envelop4_math">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">Final Math</property>
+                                    <property name="halign">start</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkEntry" id="final_math">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="text" translatable="yes">10000.0 * (${sound}*${envelop1}*${envelop2})</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkToggleButton" id="math_toggle">
+                                    <property name="label" translatable="yes">Edit Math</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                  </object>
+                              </child>
+                              <child>
+                                  <object class="GtkDrawingArea" id="math_graph">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="halign">fill</property>
+                                    <property name="valign">start</property>
+                                    <property name="height-request">124</property>
+                                  </object>
+                              </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkDrawingArea" id="keyboard_keys">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="halign">fill</property>
+                            <property name="valign">start</property>
+                            <property name="height-request">124</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">Midi</property>
+                    <property name="title" translatable="yes">Midi</property>
+                    <property name="child">
+                      <object class="GtkBox" id="midi_box">
+                          <property name="visible">True</property>
+                          <property name="can-focus">True</property>
+                          <property name="orientation">vertical</property>
+                          <property name="homogeneous">False</property>
+                          <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">Midi Input</property>
+                                <property name="halign">start</property>
+                              </object>
+                          </child>
+                          <child>
+                              <object class="GtkComboBoxText" id="midi_combo">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                              </object>
+                          </child>
+                       </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">Settings</property>
+                    <property name="title" translatable="yes">Settings</property>
+                    <property name="child">
+                      <object class="GtkFixed">
+                        <property name="can-focus">0</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">About</property>
+                    <property name="title" translatable="yes">About</property>
+                    <property name="child">
+                      <object class="GtkDrawingArea" id="about_page">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">fill</property>
+                        <property name="valign">fill</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+        </object>
         </child>
       </object>
     </child>

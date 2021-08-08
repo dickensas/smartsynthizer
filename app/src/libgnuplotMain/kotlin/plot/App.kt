@@ -8,7 +8,7 @@ import openal.*
 import mgl.*
 import gtk4.*
 import synth.*
-import kotlin.math.*
+import rtmidi.*
 
 var dev: CPointer<ALCdevice>? = null
 var ctx: CPointer<ALCcontext>? = null
@@ -22,9 +22,13 @@ var ui_envelop2_math: CPointer<GObject>? = null
 var ui_envelop3_math: CPointer<GObject>? = null
 var ui_envelop4_math: CPointer<GObject>? = null
 var ui_final_math: CPointer<GObject>? = null
-var mathParamGlobal: MathParam? = null
+var ui_midi_combo: CPointer<GObject>? = null
 val keyStates: HashMap<UInt, Boolean> = HashMap<UInt, Boolean>()
+var mathParamGlobal: MathParam = MathParam()
+var midiPorts = mutableListOf<String>()
 lateinit var g_wglarea: CPointer<GtkGLArea>
+lateinit var midiPtr: RtMidiInPtr
+
 
 @ThreadLocal
 val sounds: Array<Int> = arrayOf<Int>(
@@ -41,20 +45,30 @@ val sounds: Array<Int> = arrayOf<Int>(
 )
 
 data class MathParam(
-                 val step: String, 
-                 val sound: String, 
-                 val envelop1: String,
-                 val envelop2: String,
-                 val envelop3: String,
-                 val envelop4: String,
-                 val finalMath: String,
-                 val key: Int,
+                 val step: String = "", 
+                 val sound: String = "", 
+                 val envelop1: String = "",
+                 val envelop2: String = "",
+                 val envelop3: String = "",
+                 val envelop4: String = "",
+                 val finalMath: String = "",
+                 var key: Int = 0,
                  var sr: Int = 44100,
-                 var d: Float = 1.0f,
+                 var d: Float = 1.0f
 )
 
 var WINDOW_WIDTH = 957
 var WINDOW_HEIGHT = 124
+
+fun midi_change() {
+    val portName = gtk_combo_box_get_active_id(ui_midi_combo!!.reinterpret())
+    rtmidi_close_port(midiPtr!!)
+    rtmidi_open_port(
+       midiPtr!!, 
+       portName!!.toKString().toUInt(), 
+       midiPorts[portName!!.toKString().toInt()]
+    )
+}
 
 fun generate_samples(mathParam: MathParam): HMDT? {
     var key2 = sounds.indexOf(mathParam.key)
@@ -157,21 +171,8 @@ fun render_graph_callback(
     var buf = mgl_get_rgba(gr);
     platform.posix.memcpy(surface_data, buf,(channels * w * h).toULong())
     
-    /*cairo_set_source_rgb(cr, 1.0, 1.0, 1.0)
-    cairo_paint(cr)
-    
-    cairo_set_source_rgb(cr, 1.0, 0.0, 0.0)
-    cairo_rectangle(cr,0.0,0.0,50.0,50.0)
-    cairo_fill(cr)*/
-    
     var surface = cairo_image_surface_create_for_data (surface_data, CAIRO_FORMAT_ARGB32, w, h, channels * w)
     cairo_surface_flush(surface)
-    //cairo_mask_surface(cr, surface, 0.0, 0.0)
-    //cairo_set_source_surface(cr, surface, 0.0, 0.0)
-    //cairo_rectangle (cr, 0.0,0.0,150.0,150.0)
-    //cairo_paint (cr)
-    
-    //cairo_surface_destroy(surface)
     
     var first = cairo_surface_create_similar(
       cairo_get_target(cr),
@@ -197,6 +198,20 @@ fun render_graph_callback(
     
     cairo_destroy(first_cr)
     
+}
+
+fun render_about_page_callback(
+                 glarea:CPointer<GtkDrawingArea>?, 
+                 cr: CPointer<cairo_t>?
+) = memScoped {
+    var error = alloc<CPointerVar<GError>>()
+    var handle = rsvg_handle_new_from_file ("svg/about.svg", error.ptr);
+    if(error.value!=null)
+        throw Error("unable to process about.svg " + error.value)
+    if(handle==null)
+        throw Error("unable to load about.svg")
+    if( rsvg_handle_render_cairo ( handle, cr ) != 1 )
+        throw Error( "Drawing about.svg failed" ) 
 }
 
 fun render_callback(
@@ -380,7 +395,6 @@ fun math_edit_toggled(
 }
 
 fun activate_callback(app:CPointer<GtkApplication>?) {
-    println("activate")
     
     var builder = gtk_builder_new_from_file ("glade/window_main.glade")
     var window = gtk_builder_get_object(builder, "window_main")
@@ -392,6 +406,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
                                gtk_widget_get_display(window.reinterpret()),
                                provider!!.reinterpret(),
                                GTK_STYLE_PROVIDER_PRIORITY_USER);
+
     keys = gtk_builder_get_object(builder, "keyboard_keys")
     graph = gtk_builder_get_object(builder, "math_graph")
     ui_step_math = gtk_builder_get_object(builder, "step_math")
@@ -401,8 +416,22 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     ui_envelop3_math = gtk_builder_get_object(builder, "envelop3_math")
     ui_envelop4_math = gtk_builder_get_object(builder, "envelop4_math")
     ui_final_math = gtk_builder_get_object(builder, "final_math")
+    ui_midi_combo = gtk_builder_get_object(builder, "midi_combo")
+    var ui_about_page = gtk_builder_get_object(builder, "about_page")
+
     var ui_math_toggle = gtk_builder_get_object(builder, "math_toggle")
     toggle_edit(ui_math_toggle!!.reinterpret())
+    
+    gtk_drawing_area_set_draw_func(
+        ui_about_page!!.reinterpret(),
+        staticCFunction {
+            glarea: CPointer<GtkDrawingArea>?, 
+            cr: CPointer<cairo_t>?
+            -> render_about_page_callback ( glarea, cr )
+        }.reinterpret(),
+        null, 
+        null
+    )
     
     gtk_drawing_area_set_draw_func(
         keys!!.reinterpret(),
@@ -546,12 +575,48 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
         motion_controller!!.reinterpret()
     )
     
+    mathParamGlobal=get_params()
+    
+    midiPtr = rtmidi_in_create_default()!!
+    
+    rtmidi_in_set_callback(midiPtr, staticCFunction {  
+            timeStamp: Double, 
+            message: CArrayPointer<UByteVar>,
+            messageSize: size_t, 
+            userData: COpaquePointerVar
+            -> midi_callback( timeStamp, message, messageSize, userData  )
+        }.reinterpret(),
+        null
+    )
+
+    var c = rtmidi_get_port_count(midiPtr)
+    
+    for(i in 0..c.toInt()-1){
+        var portName = rtmidi_get_port_name(midiPtr, i.toUInt())!!.toKString()
+        gtk_combo_box_text_append(
+           ui_midi_combo!!.reinterpret(),
+           i.toString(),
+           portName
+        )
+        midiPorts.add(portName)
+    }
+    
+    g_signal_connect_data (
+    ui_midi_combo!!.reinterpret(), 
+    "notify::active", 
+    staticCFunction<Unit> {
+      midi_change()
+    }, 
+    null,
+    null, 
+    0u);
+
     g_object_unref(builder)
     gtk_widget_show (window.reinterpret())
+
 }
 
 fun startup_callback(app:CPointer<GtkApplication>?) {
-    println("startup")
     
     var defname = alcGetString(null, ALC_DEFAULT_DEVICE_SPECIFIER)
     dev = alcOpenDevice(defname?.toKString())
@@ -561,17 +626,57 @@ fun startup_callback(app:CPointer<GtkApplication>?) {
 }
 
 fun shutdown_callback(app:CPointer<GtkApplication>?) {
-    println("shutdown")
     
     alcMakeContextCurrent(null)
     alcDestroyContext(ctx)
     alcCloseDevice(dev)
+    
+    rtmidi_in_cancel_callback(midiPtr)
+    rtmidi_close_port(midiPtr)
+    rtmidi_in_free(midiPtr)
+}
+
+fun midi_idle (data: gpointer): gboolean {
+    var key: CPointer<IntVar> = data!!.reinterpret()
+
+    mathParamGlobal = get_params(key[0].toInt())
+
+    val worker = Worker.start(true, "worker2")
+    worker.execute(TransferMode.UNSAFE, { mathParamGlobal }) { data ->
+        sound_thread(data!!)
+        null
+    }
+
+    return G_SOURCE_REMOVE
+}
+
+fun midi_callback(
+                 timeStamp: Double, 
+                 message: CArrayPointer<UByteVar>,
+                 messageSize: size_t, 
+                 userData: COpaquePointerVar
+) = memScoped {
+    initRuntimeIfNeeded()
+    
+    var key = message[1].toString()
+    
+    if( ! (message[0].toInt() != 144 || key.toInt() > 35) ) {
+        var keyval = sounds[key.toInt()-21]
+        
+        g_idle_add(
+        staticCFunction {  
+            obj: CPointer<IntVar> -> midi_idle(obj)
+        }.reinterpret(),
+        alloc<IntVar>().apply { this.value = keyval }.reinterpret()
+        )
+    }
 
 }
 
 fun main() {
+
     app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE)
-    
+
     g_signal_connect_data(
         app!!.reinterpret(), 
         "activate", 
@@ -582,7 +687,7 @@ fun main() {
         null, 
         0u
     )
-    
+
     g_signal_connect_data(
         app!!.reinterpret(), 
         "startup", 
@@ -593,7 +698,7 @@ fun main() {
         null, 
         0u
     )
-    
+
     g_signal_connect_data(
         app!!.reinterpret(), 
         "shutdown", 
@@ -604,8 +709,8 @@ fun main() {
         null, 
         0u
     )
-    
+
     run_app(app, 0, null)
     g_object_unref (app)
-    
+
 }
