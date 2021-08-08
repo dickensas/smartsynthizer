@@ -4,7 +4,7 @@ SmartSynthizer is an initiative to do low level mathematical interface for music
 
 # Libraries
 
-it uses MathGL, OpenAL, Glade, RSVG and GTK4
+it uses MathGL, OpenAL, Glade, RSVG, RtMIDI and GTK4
 
 The piano key buttons are made from SVG only, if you modify the SVG take care of keeping the ID of the tags intact otherwise the buttons will not hightlight
 

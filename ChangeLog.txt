@@ -1,3 +1,8 @@
+Version 1.2.0.0
+Midi port enabled with 
+21 as the first key of midi input 
+21 is mapped to "z" in PC keyboard
+
 Version 1.1.0.0
 MathGL graph will display on UI
 
