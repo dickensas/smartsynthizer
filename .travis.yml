@@ -19,7 +19,7 @@ before_install:
   - sudo apt-get -y install libxext-dev libxcursor-dev libfontconfig-dev
   - sudo apt-get -y install libx11-dev libwayland-dev libpng-dev
   - sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3
-  - sudo apt-get -y install libglew-dev 
+  - sudo apt-get -y install libglew-dev libc6-dev
   - sudo python3 -m pip install meson
   - sudo python3 -m pip install ninja
   - sudo python3 -m pip install cmake
