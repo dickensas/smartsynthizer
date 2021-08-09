@@ -18,7 +18,8 @@ before_install:
   - sudo apt-get -y install libxi-dev libxdamage-dev libxfixes-dev
   - sudo apt-get -y install libxext-dev libxcursor-dev libfontconfig-dev
   - sudo apt-get -y install libx11-dev libwayland-dev libpng-dev
-  - sudo apt-get -y install libgles2-mesa-dev libglfw3 libopengl-dev 
+  - sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3
+  - sudo apt-get -y install libglew-dev 
   - sudo python3 -m pip install meson
   - sudo python3 -m pip install ninja
   - sudo python3 -m pip install cmake
@@ -56,7 +57,6 @@ before_install:
   - sudo mkdir build/gtk4/_build
   - sudo meson -Dprefix=/usr -Dvulkan=enabled -Dwayland-backend=false -Dbroadway-backend=false -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
   - sudo ninja -C build/gtk4/_build -j 1 -d explain -v
-  - sudo apt-get -y install libgtk-4-dev
   - sudo apt-get -y install mathgl
   - sudo apt-get -y install libopenal-dev
   - sudo apt-get -y install librtmidi-dev
