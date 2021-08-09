@@ -1,17 +1,19 @@
-dist: hirsute
+dist: bionic
 sudo: true
 language: java
 
 matrix:
   include:
     - os: linux
-      dist: hirsute
+      dist: bionic
       sudo: required
       jdk: openjdk12
 
 script: ./gradlew check --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false
 
 before_install:
+  - sudo apt-get -y install git
+  - sudo pwd
   - sudo apt-get -y install libgtk-4-dev
   - sudo apt-get -y install mathgl
   - sudo apt-get -y install libopenal-dev
