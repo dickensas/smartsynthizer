@@ -17,6 +17,13 @@ before_install:
   - sudo python3 -m pip install ninja
   - sudo mkdir build
   - sudo mkdir build/gtk4
+  - sudo mkdir build/glib2
+  - sudo git clone https://github.com/GNOME/glib.git build/glib2
+  - sudo git --work-tree=build/glib2 --git-dir=build/glib2/.git checkout tags/2.68.3 -b 2.68.3
+  - sudo mkdir build/glib2/_build
+  - sudo meson build/glib2/_build build/glib2
+  - sudo ninja -C build/glib2/_build -j 1 -d explain -v
+  - sudo ninja -C build/glib2/_build install
   - sudo git clone https://github.com/GNOME/gtk.git build/gtk4
   - sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
   - sudo mkdir build/gtk4/_build
