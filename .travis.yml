@@ -13,6 +13,7 @@ script: ./gradlew check --info --stacktrace --console=plain --max-workers=1 --no
 
 before_install:
   - sudo apt-get -y install python3.6 python3-pip python3-setuptools python3-wheel
+  - sudo apt-get -y install libxkbcommon-dev
   - sudo python3 -m pip install meson
   - sudo python3 -m pip install ninja
   - sudo mkdir build
@@ -23,13 +24,13 @@ before_install:
   - sudo git --work-tree=build/pango --git-dir=build/pango/.git checkout tags/1.48.7 -b 1.48.7
   - sudo mkdir build/pango/_build
   - sudo meson -Dprefix=/usr build/pango/_build build/pango
-  - sudo ninja -C build/pango/_build -j 1 -d explain -v
+  - sudo ninja -C build/pango/_build -j 1
   - sudo ninja -C build/pango/_build install
   - sudo git clone https://github.com/GNOME/glib.git build/glib2
   - sudo git --work-tree=build/glib2 --git-dir=build/glib2/.git checkout tags/2.68.3 -b 2.68.3
   - sudo mkdir build/glib2/_build
   - sudo meson -Dprefix=/usr build/glib2/_build build/glib2
-  - sudo ninja -C build/glib2/_build -j 1 -d explain -v
+  - sudo ninja -C build/glib2/_build -j 1
   - sudo ninja -C build/glib2/_build install
   - sudo git clone https://github.com/GNOME/gtk.git build/gtk4
   - sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
