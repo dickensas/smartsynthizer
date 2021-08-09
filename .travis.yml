@@ -25,7 +25,7 @@ before_install:
   - sudo git clone https://github.com/KhronosGroup/Vulkan-Headers.git build/vulkan
   - sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
   - sudo mkdir build/vulkan/_build
-  - sudo cmake -S build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX:PATH=/usr
+  - sudo cmake build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX=/usr
   - sudo cmake --build build/vulkan/_build --target install
   - sudo git clone https://github.com/GNOME/pango.git build/pango
   - sudo git --work-tree=build/pango --git-dir=build/pango/.git checkout tags/1.48.7 -b 1.48.7
