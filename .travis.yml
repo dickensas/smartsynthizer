@@ -56,10 +56,11 @@ before_install:
   - sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
   - sudo mkdir build/gtk4/_build
   - sudo meson -Dprefix=/usr -Dvulkan=enabled -Dwayland-backend=false -Dbroadway-backend=false -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
-  - sudo ninja -C build/gtk4/_build -j 1 -d explain -v
+  - sudo ninja -C build/gtk4/_build -j 1
   - sudo apt-get -y install mathgl
   - sudo apt-get -y install libopenal-dev
   - sudo apt-get -y install librtmidi-dev
+  - sudo chmod 777 gradlew
   
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
