@@ -14,12 +14,19 @@ script: ./gradlew check --info --stacktrace --console=plain --max-workers=1 --no
 before_install:
   - sudo apt-get -y install python3.6 python3-pip python3-setuptools python3-wheel
   - sudo apt-get -y install libxkbcommon-dev
+  - sudo apt-get -y install cmake
   - sudo python3 -m pip install meson
   - sudo python3 -m pip install ninja
   - sudo mkdir build
   - sudo mkdir build/gtk4
   - sudo mkdir build/glib2
   - sudo mkdir build/pango
+  - sudo mkdir build/vulkan
+  - sudo git clone https://github.com/KhronosGroup/Vulkan-Headers.git build/vulkan
+  - sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
+  - sudo mkdir build/vulkan/_build
+  - sudo cmake -S build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX:PATH=/usr
+  - sudo cmake --build build/vulkan/_build --target install
   - sudo git clone https://github.com/GNOME/pango.git build/pango
   - sudo git --work-tree=build/pango --git-dir=build/pango/.git checkout tags/1.48.7 -b 1.48.7
   - sudo mkdir build/pango/_build
@@ -35,7 +42,7 @@ before_install:
   - sudo git clone https://github.com/GNOME/gtk.git build/gtk4
   - sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
   - sudo mkdir build/gtk4/_build
-  - sudo meson -Dprefix=/usr build/gtk4/_build build/gtk4
+  - sudo meson -Dprefix=/usr -Dvulkan=yes -Dprint-backends=none -Dman-pages=false -Ddocumentation=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false build/gtk4/_build build/gtk4
   - sudo ninja -C build/gtk4/_build -j 1 -d explain -v
   - sudo apt-get -y install libgtk-4-dev
   - sudo apt-get -y install mathgl
