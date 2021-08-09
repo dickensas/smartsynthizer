@@ -12,7 +12,10 @@ matrix:
 script: ./gradlew check --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false
 
 before_install:
-  - sudo apt-get -y install git
+  - sudo mkdir build
+  - sudo chdir build
+  - sudo pwd
+  - sudo chdir ..
   - sudo pwd
   - sudo apt-get -y install libgtk-4-dev
   - sudo apt-get -y install mathgl
