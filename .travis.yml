@@ -42,7 +42,7 @@ before_install:
   - sudo git clone https://github.com/GNOME/gtk.git build/gtk4
   - sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
   - sudo mkdir build/gtk4/_build
-  - sudo meson -Dprefix=/usr -Dvulkan=yes -Dprint-backends=none -Dman-pages=false -Ddocumentation=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false build/gtk4/_build build/gtk4
+  - sudo meson -Dprefix=/usr -Dvulkan=enabled -Dprint-backends=none -Dman-pages=false -Ddocumentation=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false build/gtk4/_build build/gtk4
   - sudo ninja -C build/gtk4/_build -j 1 -d explain -v
   - sudo apt-get -y install libgtk-4-dev
   - sudo apt-get -y install mathgl
