@@ -1,6 +1,8 @@
-headers = vulkan/vulkan.h vulkan/vulkan_core.h gtk/gtk.h gdk/gdkevents.h gdk/win32/gdkwin32.h gdk/x11/gdkx.h gsk/gsk.h graphene.h librsvg/rsvg.h librsvg/rsvg-cairo.h
+headers.mingw = vulkan/vulkan.h vulkan/vulkan_core.h gtk/gtk.h gdk/gdkevents.h gdk/win32/gdkwin32.h gsk/gsk.h graphene.h librsvg/rsvg.h librsvg/rsvg-cairo.h
+headers.linux = vulkan/vulkan.h vulkan/vulkan_core.h gtk/gtk.h gdk/gdkevents.h gdk/x11/gdkx.h gsk/gsk.h graphene.h librsvg/rsvg.h librsvg/rsvg-cairo.h
+
 package = gtk4
-headerFilter = librsvg/* gtk/* gobject/* gio/* gdk/* gdk/win32/* glib/* vulkan/* gsk/* gsk/vulkan/* glib* gobject* gsignal* win32* gdkwin32* gdk* gsk* graphene* cairo* vulkan*
+headerFilter = librsvg/* gtk/* gobject/* gio/* gdk/* gdk/win32/* gdk/x11/* glib/* vulkan/* gsk/* gsk/vulkan/* glib* gobject* gsignal* win32* gdkwin32* gdk* gsk* graphene* cairo* vulkan*
 
 libraryPaths.linux = /usr/lib64 /usr/lib/x86_64-linux-gnu
 compilerOpts.linux = -DVK_USE_PLATFORM_XLIB_XRANDR_EXT -DGDK_RENDERING_VULKAN -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -latk-1.0 -lgdk_pixbuf-2.0 -lglib-2.0 -lgtk-4 -lgio-2.0 -lgobject-2.0 -lvulkan -lgraphene-1.0 -lcairo -lrsvg-2

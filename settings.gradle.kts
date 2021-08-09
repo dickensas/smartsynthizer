@@ -4,5 +4,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = "sythsmart"
+rootProject.name = "smartsynthizer"
 include("app")
