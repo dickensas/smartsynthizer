@@ -12,7 +12,9 @@ matrix:
 script: ./gradlew check --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false
 
 before_install:
-  - sudo apt-get -y install meson ninja-build
+  - sudo apt-get -y install python3.6
+  - sudo python3 -m pip install meson
+  - sudo python3 -m pip install ninja
   - sudo mkdir build
   - sudo mkdir build/gtk4
   - sudo git clone https://github.com/GNOME/gtk.git build/gtk4
