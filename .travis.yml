@@ -1,11 +1,11 @@
-dist: bionic
+dist: hirsute
 sudo: true
 language: java
 
 matrix:
   include:
     - os: linux
-      dist: bionic
+      dist: hirsute
       sudo: required
       jdk: openjdk12
 
