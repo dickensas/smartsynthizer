@@ -12,11 +12,14 @@ matrix:
 script: ./gradlew check --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false
 
 before_install:
+  - sudo apt-get -y install meson ninja
   - sudo mkdir build
-  - sudo cd build
-  - sudo pwd
-  - sudo cd ..
-  - sudo pwd
+  - sudo mkdir build/gtk4
+  - sudo git clone https://github.com/GNOME/gtk.git build/gtk4
+  - sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
+  - sudo mkdir build/gtk4/_build
+  - sudo meson build/gtk4/_build build/gtk4
+  - sudo ninja -C build/gtk4/_build -j 1 -d explain -v
   - sudo apt-get -y install libgtk-4-dev
   - sudo apt-get -y install mathgl
   - sudo apt-get -y install libopenal-dev
