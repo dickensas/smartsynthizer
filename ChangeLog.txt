@@ -1,7 +1,12 @@
+Version 1.2.0.1
+Introduce Travis
+Make gradle script compatible to multiple os
+
 Version 1.2.0.0
-Midi port enabled with 
-21 as the first key of midi input 
-21 is mapped to "z" in PC keyboard
+Midi port enabled with RtMIDI library
+  21 as the first key of midi input
+  21 is mapped to "z" in PC keyboard
+  Tested with Android app
 
 Version 1.1.0.0
 MathGL graph will display on UI

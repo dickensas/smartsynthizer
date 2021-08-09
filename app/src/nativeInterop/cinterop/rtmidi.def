@@ -1,7 +1,12 @@
 headers = rtmidi/rtmidi_c.h
 package = rtmidi
-libraryPaths = C:/msys64/mingw64/lib
-linkerOpts =  -LC:/msys64/mingw64/lib -lrtmidi -lstdc++
-compilerOpts = -LC:/msys64/mingw64/lib -lrtmidi -lstdc++
+
+libraryPaths.mingw = C:/msys64/mingw64/lib
+linkerOpts.mingw =  -LC:/msys64/mingw64/lib -lrtmidi -lstdc++
+compilerOpts.mingw = -LC:/msys64/mingw64/lib -lrtmidi -lstdc++
+
+libraryPaths.linux = /usr/lib64 /usr/lib/x86_64-linux-gnu
+linkerOpts.linux =  -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lrtmidi -lstdc++
+compilerOpts.linux = -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lrtmidi -lstdc++
 ---
 typedef unsigned long long size_t;

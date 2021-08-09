@@ -1,5 +1,11 @@
 headers = mgl2/data_cf_bool.h mgl2/mgl_cf.h mgl2/glut.h
 package = mgl
-libraryPaths = C:/msys64/mingw64/lib
-linkerOpts =  -LC:/msys64/mingw64/lib -lmgl2 -lstdc++
-compilerOpts = -LC:/msys64/mingw64/lib -lmgl2 -lstdc++
+
+libraryPaths.mingw = C:/msys64/mingw64/lib
+linkerOpts.mingw =  -LC:/msys64/mingw64/lib -lmgl2 -lstdc++
+compilerOpts.mingw = -LC:/msys64/mingw64/lib -lmgl2 -lstdc++
+
+libraryPaths.linux = /usr/lib64 /usr/lib/x86_64-linux-gnu
+linkerOpts.linux =  -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lmgl2 -lstdc++
+compilerOpts.linux = -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lmgl2 -lstdc++
+
