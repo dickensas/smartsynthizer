@@ -13,9 +13,9 @@ script: ./gradlew check --info --stacktrace --console=plain --max-workers=1 --no
 
 before_install:
   - sudo mkdir build
-  - sudo chdir build
+  - sudo cd build
   - sudo pwd
-  - sudo chdir ..
+  - sudo cd ..
   - sudo pwd
   - sudo apt-get -y install libgtk-4-dev
   - sudo apt-get -y install mathgl
