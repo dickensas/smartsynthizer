@@ -31,6 +31,54 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run: uname -a
+      - run: sudo apt-get -y install python3.6 python3-pip
+      - run: sudo apt-get -y install python3-setuptools python3-wheel
+      - run: sudo apt-get -y install libxkbcommon-dev libxrandr-dev libxrender-dev
+      - run: sudo apt-get -y install libxi-dev libxdamage-dev libxfixes-dev
+      - run: sudo apt-get -y install libxext-dev libxcursor-dev libfontconfig-dev
+      - run: sudo apt-get -y install libx11-dev libwayland-dev libpng-dev
+      - run: sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3
+      - run: sudo apt-get -y install libglew-dev libc6-dev
+      - run: sudo python3 -m pip install meson
+      - run: sudo python3 -m pip install ninja
+      - run: sudo python3 -m pip install cmake
+      - run: sudo mkdir build
+      - run: sudo mkdir build/gtk4
+      - run: sudo mkdir build/glib2
+      - run: sudo mkdir build/pango
+      - run: sudo mkdir build/vulkan
+      - run: sudo git clone https://github.com/KhronosGroup/Vulkan-Headers.git build/vulkan
+      - run: sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
+      - run: sudo mkdir build/vulkan/_build
+      - run: sudo cmake build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX=/usr
+      - run: sudo cmake --build build/vulkan/_build --target install
+      - run: sudo rm -fr build/vulkan
+      - run: sudo mkdir build/vulkan
+      - run: sudo git clone https://github.com/KhronosGroup/Vulkan-Loader.git build/vulkan
+      - run: sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
+      - run: sudo mkdir build/vulkan/_build
+      - run: sudo cmake build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX=/usr
+      - run: sudo cmake --build build/vulkan/_build --target install
+      - run: sudo git clone https://github.com/GNOME/glib.git build/glib2
+      - run: sudo git --work-tree=build/glib2 --git-dir=build/glib2/.git checkout tags/2.68.3 -b 2.68.3
+      - run: sudo mkdir build/glib2/_build
+      - run: sudo meson -Dprefix=/usr build/glib2/_build build/glib2
+      - run: sudo ninja -C build/glib2/_build -j 1
+      - run: sudo ninja -C build/glib2/_build install
+      - run: sudo git clone https://github.com/GNOME/pango.git build/pango
+      - run: sudo git --work-tree=build/pango --git-dir=build/pango/.git checkout tags/1.48.7 -b 1.48.7
+      - run: sudo mkdir build/pango/_build
+      - run: sudo meson -Dprefix=/usr build/pango/_build build/pango
+      - run: sudo ninja -C build/pango/_build -j 1
+      - run: sudo ninja -C build/pango/_build install
+      - run: sudo git clone https://github.com/GNOME/gtk.git build/gtk4
+      - run: sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
+      - run: sudo mkdir build/gtk4/_build
+      - run: sudo meson -Dprefix=/usr -Dvulkan=enabled -Dwayland-backend=false -Dbroadway-backend=true -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
+      - run: sudo ninja -C build/gtk4/_build -j 1
+      - run: sudo apt-get -y install mathgl
+      - run: sudo apt-get -y install libopenal-dev
+      - run: sudo apt-get -y install librtmidi-dev
       - run: gradle dependencies --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false
 
       - save_cache:
