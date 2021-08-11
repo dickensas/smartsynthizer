@@ -31,6 +31,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run: uname -a
+      - run: sudo apt-get -y install software-properties-common
       - run: sudo add-apt-repository universe
       - run: sudo apt-get -y install python3.6 python3-pip
       - run: sudo apt-get -y install python3-setuptools python3-wheel
