@@ -29,7 +29,8 @@ install:
 - sh: sudo apt-get -y install libxi-dev libxdamage-dev libxfixes-dev
 - sh: sudo apt-get -y install libxext-dev libxcursor-dev libfontconfig-dev
 - sh: sudo apt-get -y install libx11-dev libwayland-dev libpng-dev
-- sh: sudo apt-get -y install libc6-dev
+- sh: sudo apt-get -y install libc6-dev libc6 libc6-amd64 libc++-10-dev
+- sh: sudo apt-get -y install libc++-dev 
 - sh: sudo apt-get -y install libpng++-dev libpng-dev libpng16-16 
 - sh: sudo apt-get -y install libjpeg-dev libjpeg62 libjpeg8 libjpeg8-dev
 - sh: sudo apt-get -y install libspectre-dev libspectre1
@@ -52,9 +53,13 @@ install:
 - sh: sudo apt-get -y install gcc-10-x86-64-linux-gnu-base
 - sh: sudo apt-get -y install gcc-9-x86-64-linux-gnu-base
 - sh: sudo apt-get -y install binutils-x86-64-linux-gnu-dbg
+- sh: sudo apt-get -y install mathgl
+- sh: sudo apt-get -y install libopenal-dev
+- sh: sudo apt-get -y install librtmidi-dev
 - sh: sudo apt-get -y install libpython3.9 --fix-missing
 - sh: sudo apt-get -y install python3.9-full
 - sh: sudo apt-get -y install python3.9-dev
+- sh: sudo ls -al /usr/include/x86_64-linux-gnu/bits
 - sh: sudo wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py
 - sh: sudo python3 get-pip.py
 - sh: sudo python3 -m pip install --upgrade pip
@@ -85,9 +90,6 @@ install:
 - sh: sudo mkdir build/gtk4/_build
 - sh: sudo meson -Dprefix=/usr -Dvulkan=enabled -Dwayland-backend=false -Dbroadway-backend=false -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
 - sh: sudo ninja -C build/gtk4/_build -j 1
-- sh: sudo apt-get -y install mathgl
-- sh: sudo apt-get -y install libopenal-dev
-- sh: sudo apt-get -y install librtmidi-dev
 
 build_script:
 - sh: sudo ./gradlew assemble --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false -Dhttps.protocols=SSLv3,TLSv1,TLSv1.1,TLSv1.2

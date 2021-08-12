@@ -76,6 +76,7 @@ kotlin {
                            "/usr/include/glib-2.0",
                            "/usr/include/graphene-1.0",
                            "/usr/include/librsvg-2.0",
+                           "/usr/include/x86_64-linux-gnu",
                            "/usr/include"
                         )
                     }
@@ -93,6 +94,7 @@ kotlin {
                     "linuxx64" ->
                        includeDirs {
                           allHeaders(
+                             "/usr/include/x86_64-linux-gnu",
                              "/usr/include"
                           )
                        }
@@ -112,6 +114,7 @@ kotlin {
                        includeDirs {
                           allHeaders(
                              "${project.rootDir}/include",
+                             "/usr/include/x86_64-linux-gnu",
                              "/usr/include"
                           )
                        }
@@ -129,6 +132,7 @@ kotlin {
                     "linuxx64" ->
                        includeDirs {
                           allHeaders(
+                             "/usr/include/x86_64-linux-gnu",
                              "/usr/include"
                           )
                        }
