@@ -51,7 +51,6 @@ install:
 - sh: sudo apt-get -y install xsltproc 
 - sh: sudo apt-get -y install gcc-10-x86-64-linux-gnu-base
 - sh: sudo apt-get -y install gcc-9-x86-64-linux-gnu-base
-- sh: sudo apt-get -y install gcc-8-x86-64-linux-gnu-base
 - sh: sudo apt-get -y install binutils-x86-64-linux-gnu-dbg
 - sh: sudo apt-get -y install libpython3.9 --fix-missing
 - sh: sudo apt-get -y install python3.9-full
