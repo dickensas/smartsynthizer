@@ -1,4 +1,4 @@
-image: Ubuntu2004
+image: dickensas/ubuntu
 cache:
 - /home/appveyor/.gradle/caches
 
