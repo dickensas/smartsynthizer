@@ -16,7 +16,7 @@ install:
 - sh: sudo mkdir build/mathgl-2.4.4
 - sh: sudo wget --no-check-certificate -c "https://nchc.dl.sourceforge.net/project/mathgl/mathgl/mathgl 2.4.4/mathgl-2.4.4.tar.gz" -O - | sudo tar -xz -C build
 - sh: sudo mkdir build/mathgl-2.4.4/_build
-- sh: sudo cmake build/mathgl-2.4.4 -B build/mathgl-2.4.4/_build -DCMAKE_INSTALL_PREFIX=/usr -D enable-glut=on -D CMAKE_SHARED_LINKER_FLAGS:STRING='-lfreeglut'
+- sh: sudo cmake build/mathgl-2.4.4 -B build/mathgl-2.4.4/_build -DCMAKE_INSTALL_PREFIX=/usr -D enable-glut=on
 - sh: sudo cmake --build build/mathgl-2.4.4/_build --target install
 
 build_script:
