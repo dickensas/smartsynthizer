@@ -7,6 +7,7 @@ cache:
 
 install:
 - sh: sudo chmod 777 gradlew
+- sh: sudo apt-get -y install libncurses5
 
 build_script:
 - sh: sudo ./gradlew assemble --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false -Dhttps.protocols=SSLv3,TLSv1,TLSv1.1,TLSv1.2
