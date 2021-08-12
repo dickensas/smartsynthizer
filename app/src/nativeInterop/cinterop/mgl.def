@@ -1,4 +1,6 @@
-headers = data_cf_bool.h mgl2/mgl_cf.h mgl2/glut.h
+headers.mingw = data_cf_bool.h mgl2/mgl_cf.h mgl2/glut.h
+headers.linux = data_cf_bool.h mgl2/mgl_cf.h mgl2/glut.h
+
 package = mgl
 
 libraryPaths.mingw = C:/msys64/mingw64/lib
