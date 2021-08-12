@@ -1,4 +1,4 @@
-image: Ubuntu2004
+image: Ubuntu
 cache:
 - /home/appveyor/.gradle/caches
 
