@@ -1,0 +1,14 @@
+image: Ubuntu
+
+install:
+- sh: sudo uname -a
+- sh: sudo pwd
+- sh: sudo ls -al gradlew
+- sh: sudo chmod 777 gradlw
+- sh: sudo apt-get update
+- sh: sudo apt-get install openjdk-8-jdk
+- sh: sudo apt-get install libgtk-4-dev
+- sh: sudo apt-get install libopenal-dev
+
+build_script:
+- gradlew assemble
