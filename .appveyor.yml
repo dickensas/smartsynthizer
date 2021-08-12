@@ -9,10 +9,12 @@ install:
 - sh: sudo chmod -R 755 /home/appveyor/.konan
 - sh: sudo chown appveyor:appveyor /home/appveyor/.konan
 - sh: sudo apt-get -y remove --auto-remove --allow-downgrades --force-yes --allow-remove-essential --allow-change-held-packages  openjdk*
+- sh: sudo rm -rf /usr/lib/jvm/java-11-openjdk-amd64
+- sh: sudo rm -rf /usr/lib/jvm/java-9-openjdk-amd64
 - sh: sudo apt-get -y purge --auto-remove --allow-downgrades --force-yes --allow-remove-essential --allow-change-held-packages  openjdk*
 - sh: sudo apt-get -y install --allow-downgrades --force-yes --allow-remove-essential --allow-change-held-packages openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jre-headless
-- sh: sudo set JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-- sh: sudo set PATH=$JAVA_HOME/bin:$PATH
+- sh: export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+- sh: export PATH=$JAVA_HOME/bin:$PATH
 - sh: sudo wget --no-check-certificate -c https://download.jetbrains.com/kotlin/native/builds/releases/1.5.20/linux/kotlin-native-prebuilt-linux-1.5.20.tar.gz -O - | tar -xz -C /home/appveyor/.konan/
 
 build_script:
