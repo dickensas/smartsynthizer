@@ -22,7 +22,7 @@ install:
 - sh: sudo apt-get -y install libelf++0 libelf1 libelf-dev
 - sh: sudo apt-get -y install libxml2 libxml2-dev libxml2-utils 
 - sh: sudo apt-get -y install libxslt1-dev libxslt1.1 
-- sh: sudo apt-get -y install python3.6 python3-pip sysprof libpango1.0-dev
+- sh: sudo apt-get -y install python3.8 python3-pip sysprof libpango1.0-dev --fix-missing
 - sh: sudo apt-get -y install libpango-1.0-0 libpangocairo-1.0-0
 - sh: sudo apt-get -y install libglib2.0-0 libglib2.0-dev
 - sh: sudo apt-get -y install python3-setuptools python3-wheel
