@@ -7,8 +7,6 @@ cache:
 
 install:
 - sh: sudo chmod 777 gradlew
-- sh: sudo cp app/data_cf_bool.h /usr/include
-- sh: sudo chmod -R 755 /usr/include/data_cf_bool.h
 - sh: sudo apt-get -y install libncurses5
 - sh: sudo apt-get update
 - sh: sudo apt-get -y install libegl1-mesa libegl1-mesa-dev
@@ -20,7 +18,6 @@ install:
 - sh: sudo mkdir build/mathgl-2.4.4/_build
 - sh: sudo cmake build/mathgl-2.4.4 -B build/mathgl-2.4.4/_build -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_DEPENDENT_OPTION:enable-glut=true
 - sh: sudo cmake --build build/mathgl-2.4.4/_build --target install
-- sh: sudo ls /usr/include/mgl2
 
 build_script:
 - sh: sudo ./gradlew assemble --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false -Dhttps.protocols=SSLv3,TLSv1,TLSv1.1,TLSv1.2

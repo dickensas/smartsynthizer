@@ -51,9 +51,11 @@ kotlin {
                              "C:\\msys64\\mingw64\\include"
                           )
                        }
-                    "linuxX64" ->
+                    "linuxx64" ->
                        includeDirs {
                           allHeaders(
+                             "${project.rootDir}",
+                             "${project.rootDir}/app",
                              "/usr/include",
                              "/usr/include/x86_64-linux-gnu"
                           )

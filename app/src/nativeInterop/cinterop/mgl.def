@@ -1,5 +1,5 @@
 headers.mingw = data_cf_bool.h mgl2/mgl_cf.h mgl2/glut.h
-headers.linux = /usr/include/data_cf_bool.h mgl2/mgl_cf.h mgl2/glut.h
+headers.linux = data_cf_bool.h mgl2/mgl_cf.h mgl2/glut.h
 
 package = mgl
 
