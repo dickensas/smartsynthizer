@@ -15,6 +15,7 @@ install:
 - sh: sudo apt-get -y install --allow-downgrades --force-yes --allow-remove-essential --allow-change-held-packages openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jre-headless
 - sh: export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 - sh: export PATH=$JAVA_HOME/bin:$PATH
+- sh: sudo apt-get -y install libncurses5
 - sh: sudo wget --no-check-certificate -c https://download.jetbrains.com/kotlin/native/builds/releases/1.5.20/linux/kotlin-native-prebuilt-linux-1.5.20.tar.gz -O - | tar -xz -C /home/appveyor/.konan/
 
 build_script:
