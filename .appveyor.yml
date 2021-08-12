@@ -49,6 +49,10 @@ install:
 - sh: sudo apt-get -y install sassc hicolor-icon-theme libglib2.0-0
 - sh: sudo apt-get -y install libglib2.0-dev pkg-config bison gettext
 - sh: sudo apt-get -y install xsltproc 
+- sh: sudo apt-get -y install gcc-10-x86-64-linux-gnu-base
+- sh: sudo apt-get -y install gcc-9-x86-64-linux-gnu-base
+- sh: sudo apt-get -y install gcc-8-x86-64-linux-gnu-base
+- sh: sudo apt-get -y install binutils-x86-64-linux-gnu-dbg
 - sh: sudo apt-get -y install libpython3.9 --fix-missing
 - sh: sudo apt-get -y install python3.9-full
 - sh: sudo apt-get -y install python3.9-dev
