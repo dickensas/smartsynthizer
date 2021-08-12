@@ -66,6 +66,7 @@ kotlin {
                     includeDirs {
                         allHeaders(
                            "/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+                           "/usr/lib/x86_64-linux-gnu/graphene-1.0/include",
                            "/usr/lib/glib-2.0/include",
                            "/usr/lib/graphene-1.0/include",
                            "/usr/include/atk-1.0",
