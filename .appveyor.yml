@@ -11,11 +11,11 @@ install:
 - sh: sudo mkdir -p /home/appveyor/.konan
 - sh: sudo chmod -R 755 /home/appveyor/.konan
 - sh: sudo chown appveyor:appveyor /home/appveyor/.konan
-- sh: sudo apt-get -y remove --auto-remove --allow-downgrades --allow --allow-remove-essential --allow-change-held-packages  openjdk*
+- sh: sudo apt-get -y remove --auto-remove --allow-downgrades --force-yes --allow-remove-essential --allow-change-held-packages  openjdk*
 - sh: sudo rm -rf /usr/lib/jvm/java-11-openjdk-amd64
 - sh: sudo rm -rf /usr/lib/jvm/java-9-openjdk-amd64
-- sh: sudo apt-get -y purge --auto-remove --allow-downgrades --allow --allow-remove-essential --allow-change-held-packages  openjdk*
-- sh: sudo apt-get -y install --allow-downgrades --allow --allow-remove-essential --allow-change-held-packages openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jre-headless
+- sh: sudo apt-get -y purge --auto-remove --allow-downgrades --force-yes --allow-remove-essential --allow-change-held-packages  openjdk*
+- sh: sudo apt-get -y install --allow-downgrades --force-yes --allow-remove-essential --allow-change-held-packages openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jre-headless
 - sh: export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 - sh: export PATH=$JAVA_HOME/bin:$PATH
 - sh: sudo apt-get -y install libncurses5
