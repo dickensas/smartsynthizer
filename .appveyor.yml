@@ -8,6 +8,10 @@ cache:
 install:
 - sh: sudo chmod 777 gradlew
 - sh: sudo apt-get -y install libncurses5
+- sh: sudo apt-get update
+- sh: sudo apt-get -y install libegl1-mesa libegl1-mesa-dev
+- sh: sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3
+- sh: sudo apt-get -y install libglew-dev libglew2.1
 - sh: sudo mkdir build
 - sh: sudo mkdir build/mathgl-2.4.4
 - sh: sudo wget --no-check-certificate -c "https://nchc.dl.sourceforge.net/project/mathgl/mathgl/mathgl 2.4.4/mathgl-2.4.4.tar.gz" -O - | sudo tar -xz -C build
