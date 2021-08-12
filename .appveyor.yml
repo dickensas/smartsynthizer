@@ -29,8 +29,6 @@ install:
 - sh: sudo apt-get -y install libxi-dev libxdamage-dev libxfixes-dev
 - sh: sudo apt-get -y install libxext-dev libxcursor-dev libfontconfig-dev
 - sh: sudo apt-get -y install libx11-dev libwayland-dev libpng-dev
-- sh: sudo apt-get -y install libegl1-mesa libegl1-mesa-dev --fix-missing
-- sh: sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3 --fix-missing
 - sh: sudo apt-get -y install libglew-dev libc6-dev
 - sh: sudo apt-get -y install libpng++-dev libpng-dev libpng16-16 
 - sh: sudo apt-get -y install libjpeg-dev libjpeg62 libjpeg8 libjpeg8-dev
