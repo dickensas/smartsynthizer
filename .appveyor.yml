@@ -4,7 +4,9 @@ cache:
 
 install:
 - sh: sudo chmod 777 gradlew
-- sh: sudo apt-get -y install openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jdk
+- sh: sudo apt-get -y install wget wget2
+- sh: sudo mkdir /home/appveyor/.konan/kotlin-native-prebuilt-linux-1.5.20
+- sh: sudo wget --no-check-certificate -c https://download.jetbrains.com/kotlin/native/builds/releases/1.5.20/linux/kotlin-native-prebuilt-linux-1.5.20.tar.gz -O - | tar -xz -C /home/appveyor/.konan/
 
 build_script:
-- sh: ./gradlew assemble --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false
+- sh: ./gradlew assemble --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false -Dhttps.protocols=SSLv3,TLSv1,TLSv1.1,TLSv1.2
