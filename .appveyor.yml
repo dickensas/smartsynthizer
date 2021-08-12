@@ -53,7 +53,9 @@ install:
 - sh: sudo apt-get -y install gcc-10-x86-64-linux-gnu-base
 - sh: sudo apt-get -y install gcc-9-x86-64-linux-gnu-base
 - sh: sudo apt-get -y install binutils-x86-64-linux-gnu-dbg
-- sh: sudo apt-get -y install mathgl
+- sh: sudo apt-get -y install mathgl libmgl-dev libmgl7.5.0
+- sh: sudo apt-get -y install libmgl-mpi7.5.0 libmgl-glut7.5.0 
+- sh: sudo apt-get -y install libmgl-data
 - sh: sudo apt-get -y install libopenal-dev
 - sh: sudo apt-get -y install librtmidi-dev
 - sh: sudo apt-get -y install libpython3.9 --fix-missing

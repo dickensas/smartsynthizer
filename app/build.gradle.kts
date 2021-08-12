@@ -98,8 +98,8 @@ kotlin {
                     "linuxx64" ->
                        includeDirs {
                           allHeaders(
-                             "/usr/include/x86_64-linux-gnu",
-                             "/usr/include"
+                             "/usr/include",
+                             "/usr/include/x86_64-linux-gnu"
                           )
                        }
                 }
@@ -116,8 +116,8 @@ kotlin {
                     "linuxX64" ->
                        includeDirs {
                           allHeaders(
-                             "/usr/include/x86_64-linux-gnu",
-                             "/usr/include"
+                             "/usr/include",
+                             "/usr/include/x86_64-linux-gnu"
                           )
                        }
                 }
@@ -134,14 +134,12 @@ kotlin {
                     "linuxx64" ->
                        includeDirs {
                           allHeaders(
-                             "/usr/include/x86_64-linux-gnu",
-                             "/usr/include"
+                             "/usr/include",
+                             "/usr/include/x86_64-linux-gnu"
                           )
                        }
                  }
             }
-            
-            
         }
     }
     
