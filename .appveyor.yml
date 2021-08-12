@@ -4,8 +4,8 @@ cache:
 
 install:
 - sh: sudo chmod 777 gradlew
-- sh: sudo apt-get -y install wget wget2
 - sh: sudo mkdir -p /home/appveyor/.konan/kotlin-native-prebuilt-linux-1.5.20
+- sh: sudo chmod -R 755 /home/appveyor/.konan
 - sh: sudo wget --no-check-certificate -c https://download.jetbrains.com/kotlin/native/builds/releases/1.5.20/linux/kotlin-native-prebuilt-linux-1.5.20.tar.gz -O - | tar -xz -C /home/appveyor/.konan/
 
 build_script:
