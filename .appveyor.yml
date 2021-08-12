@@ -1,6 +1,9 @@
 image: Ubuntu2004
+
 cache:
 - /home/appveyor/.gradle/caches
+- /root/.gradle/caches
+- /root/.konan/cache
 
 install:
 - sh: sudo chmod 777 gradlew
@@ -16,7 +19,62 @@ install:
 - sh: export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 - sh: export PATH=$JAVA_HOME/bin:$PATH
 - sh: sudo apt-get -y install libncurses5
-- sh: sudo wget --no-check-certificate -c https://download.jetbrains.com/kotlin/native/builds/releases/1.5.20/linux/kotlin-native-prebuilt-linux-1.5.20.tar.gz -O - | tar -xz -C /home/appveyor/.konan/
+- sh: sudo apt-get -y install libelf++0 libelf1 libelf-dev
+- sh: sudo apt-get -y install libxml2 libxml2-dev libxml2-utils 
+- sh: sudo apt-get -y install libxslt1-dev libxslt1.1 
+- sh: sudo apt-get -y install python3.6 python3-pip sysprof libpango1.0-dev
+- sh: sudo apt-get -y install libpango-1.0-0 libpangocairo-1.0-0
+- sh: sudo apt-get -y install libglib2.0-0 libglib2.0-dev
+- sh: sudo apt-get -y install python3-setuptools python3-wheel
+- sh: sudo apt-get -y install libxkbcommon-dev libxrandr-dev libxrender-dev
+- sh: sudo apt-get -y install libxi-dev libxdamage-dev libxfixes-dev
+- sh: sudo apt-get -y install libxext-dev libxcursor-dev libfontconfig-dev
+- sh: sudo apt-get -y install libx11-dev libwayland-dev libpng-dev
+- sh: sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3
+- sh: sudo apt-get -y install libglew-dev libc6-dev
+- sh: sudo apt-get -y install libpng++-dev libpng-dev libpng16-16 
+- sh: sudo apt-get -y install libjpeg-dev libjpeg62 libjpeg8 libjpeg8-dev
+- sh: sudo apt-get -y install libspectre-dev libspectre1
+- sh: sudo apt-get -y install librsvg2-2 librsvg2-dev
+- sh: sudo apt-get -y install libpixman-1-0 libpixman-1-dev
+- sh: sudo apt-get -y install libxcb-shm0 libxcb-shm0-dev
+- sh: sudo apt-get -y install cairo-5c
+- sh: sudo apt-get -y install libicu-dev libthai-dev
+- sh: sudo apt-get -y install libvulkan-dev libvulkan1
+- sh: sudo apt-get -y install libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-dev
+- sh: sudo apt-get -y install ffmpeg libatk1.0-dev libglm-dev iso-codes
+- sh: sudo apt-get -y install libgraphene-1.0-dev libgraphene-1.0-0 
+- sh: sudo apt-get -y install sassc hicolor-icon-theme libglib2.0-0
+- sh: sudo apt-get -y install libglib2.0-dev pkg-config bison gettext
+- sh: sudo apt-get -y install xsltproc 
+- sh: sudo python3 -m pip install meson
+- sh: sudo python3 -m pip install ninja
+- sh: sudo python3 -m pip install cmake
+- sh: sudo mkdir build
+- sh: sudo mkdir build/gtk4
+- sh: sudo mkdir build/glib2
+- sh: sudo mkdir build/pango
+- sh: sudo mkdir build/vulkan
+- sh: sudo git clone https://github.com/GNOME/glib.git build/glib2
+- sh: sudo git --work-tree=build/glib2 --git-dir=build/glib2/.git checkout tags/2.68.3 -b 2.68.3
+- sh: sudo mkdir build/glib2/_build
+- sh: sudo meson -Dprefix=/usr build/glib2/_build build/glib2
+- sh: sudo ninja -C build/glib2/_build -j 1
+- sh: sudo ninja -C build/glib2/_build install
+- sh: sudo git clone https://github.com/GNOME/pango.git build/pango
+- sh: sudo git --work-tree=build/pango --git-dir=build/pango/.git checkout tags/1.48.7 -b 1.48.7
+- sh: sudo mkdir build/pango/_build
+- sh: sudo meson -Dprefix=/usr build/pango/_build build/pango
+- sh: sudo ninja -C build/pango/_build -j 1
+- sh: sudo ninja -C build/pango/_build install
+- sh: sudo git clone https://github.com/GNOME/gtk.git build/gtk4
+- sh: sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.0 -b 4.0
+- sh: sudo mkdir build/gtk4/_build
+- sh: sudo meson -Dprefix=/usr -Dvulkan=enabled -Dwayland-backend=false -Dbroadway-backend=false -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
+- sh: sudo ninja -C build/gtk4/_build -j 1
+- sh: sudo apt-get -y install mathgl
+- sh: sudo apt-get -y install libopenal-dev
+- sh: sudo apt-get -y install librtmidi-dev
 
 build_script:
 - sh: sudo ./gradlew assemble --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false -Dhttps.protocols=SSLv3,TLSv1,TLSv1.1,TLSv1.2
