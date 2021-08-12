@@ -1,6 +1,7 @@
 image: Ubuntu2004
 cache:
-  - /home/appveyor/.gradle/caches
+- /home/appveyor/.gradle/caches
+
 install:
 - sh: sudo chmod 777 gradlew
 
