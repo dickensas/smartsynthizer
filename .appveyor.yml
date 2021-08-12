@@ -43,13 +43,12 @@ install:
 - sh: sudo apt-get -y install libgraphene-1.0-dev libgraphene-1.0-0 
 - sh: sudo apt-get -y install sassc hicolor-icon-theme
 - sh: sudo apt-get -y install pkg-config bison gettext
-- sh: sudo apt-get -y install xsltproc mathgl libmgl-dev
+- sh: sudo apt-get -y install xsltproc
 - sh: sudo apt-get -y install libopenal-dev
 - sh: sudo apt-get -y install librtmidi-dev
 - sh: sudo apt-get -y install libpython3.9 --fix-missing
 - sh: sudo apt-get -y install python3.9-full
 - sh: sudo apt-get -y install python3.9-dev
-- sh: sudo ls -al /usr/include/x86_64-linux-gnu/bits
 - sh: sudo wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py
 - sh: sudo python3 get-pip.py
 - sh: sudo python3 -m pip install --upgrade pip
@@ -63,6 +62,10 @@ install:
 - sh: sudo mkdir build/glib2
 - sh: sudo mkdir build/pango
 - sh: sudo mkdir build/vulkan
+- sh: sudo wget --no-check-certificate -c "https://webwerks.dl.sourceforge.net/project/mathgl/mathgl/mathgl 2.4.4/mathgl-2.4.4.tar.gz" -O - | tar -xz -C build
+- sh: sudo mkdir build/mathgl-2.4.4/_build
+- sh: sudo cmake build/mathgl-2.4.4 -B build/mathgl-2.4.4/_build -DCMAKE_INSTALL_PREFIX=/usr
+- sh: sudo cmake --build build/mathgl-2.4.4/_build --target install
 - sh: sudo git clone https://github.com/GNOME/glib.git build/glib2
 - sh: sudo git --work-tree=build/glib2 --git-dir=build/glib2/.git checkout tags/2.68.3 -b 2.68.3
 - sh: sudo mkdir build/glib2/_build
