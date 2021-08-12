@@ -42,7 +42,7 @@ kotlin {
         }
         compilations["main"].cinterops {
         
-            val asynth by creating {}
+            val synth by creating {}
             
             val gtk4 by creating {
                 when (platform) {
