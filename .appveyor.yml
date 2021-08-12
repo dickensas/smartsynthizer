@@ -1,8 +1,12 @@
-image: Ubuntu
+image: Ubuntu2004
 
 install:
+- sh: sudo uname -a
 - sh: sudo apt-get update
-- sh: sudo apt-get -y install python3.6 python3-pip
+- sh: sudo apt-get update
+- sh: sudo apt-get -y install python3.6 python3-pip sysprof libpango1.0-dev
+- sh: sudo apt-get -y install libpango-1.0-0 libpangocairo-1.0-0
+- sh: sudo apt-get -y install libglib2.0-0 libglib2.0-dev
 - sh: sudo apt-get -y install python3-setuptools python3-wheel
 - sh: sudo apt-get -y install libxkbcommon-dev libxrandr-dev libxrender-dev
 - sh: sudo apt-get -y install libxi-dev libxdamage-dev libxfixes-dev
@@ -59,7 +63,7 @@ install:
 - sh: sudo git clone https://github.com/GNOME/gtk.git build/gtk4
 - sh: sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
 - sh: sudo mkdir build/gtk4/_build
-- sh: sudo meson -Dprefix=/usr -Dvulkan=enabled -Dx11-backend=false -Dwayland-backend=false -Dbroadway-backend=false -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
+- sh: sudo meson -Dprefix=/usr -Dvulkan=enabled -Dwayland-backend=false -Dbroadway-backend=false -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
 - sh: sudo ninja -C build/gtk4/_build -j 1
 - sh: sudo apt-get -y install mathgl
 - sh: sudo apt-get -y install libopenal-dev
