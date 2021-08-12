@@ -7,6 +7,7 @@ install:
 - sh: echo "$USER"
 - sh: sudo mkdir -p /home/appveyor/.konan
 - sh: sudo chmod -R 755 /home/appveyor/.konan
+- sh: sudo chown appveyor:appveyor /home/appveyor/.konan
 - sh: sudo wget --no-check-certificate -c https://download.jetbrains.com/kotlin/native/builds/releases/1.5.20/linux/kotlin-native-prebuilt-linux-1.5.20.tar.gz -O - | tar -xz -C /home/appveyor/.konan/
 
 build_script:
