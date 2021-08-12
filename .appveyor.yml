@@ -12,7 +12,6 @@ install:
 - sh: sudo apt-get -y install libglew-dev libc6-dev
 - sh: sudo apt-get -y install libpng++-dev libpng-dev libpng16-16 
 - sh: sudo apt-get -y install libjpeg-dev libjpeg62 libjpeg8 libjpeg8-dev
-- sh: sudo apt-get -y install libjpeg9 libjpeg9-dev
 - sh: sudo apt-get -y install libspectre-dev libspectre1
 - sh: sudo apt-get -y install librsvg2-2 librsvg2-dev
 - sh: sudo apt-get -y install libpixman-1-0 libpixman-1-dev
