@@ -7,7 +7,7 @@ cache:
 
 install:
 - sh: sudo chmod 777 gradlew
-- sh: sudo cp data_cf_bool.h /usr/include
+- sh: sudo cp app/data_cf_bool.h /usr/include
 - sh: sudo chmod -R 755 /usr/include/data_cf_bool.h
 - sh: sudo apt-get -y install libncurses5
 - sh: sudo apt-get update
