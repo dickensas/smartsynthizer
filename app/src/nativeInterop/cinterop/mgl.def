@@ -6,7 +6,7 @@ linkerOpts.mingw =  -I./ -LC:/msys64/mingw64/lib -lmgl2 -lstdc++
 compilerOpts.mingw = -I./ -LC:/msys64/mingw64/lib -lmgl2 -lstdc++
 
 libraryPaths.linux = /usr/lib64 /usr/lib/x86_64-linux-gnu /usr/lib
-linkerOpts.linux = -I./ -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -L/usrlib -lmgl -lstdc++
-compilerOpts.linux = -I./ -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -L/usrlib -lmgl -lstdc++
+linkerOpts.linux = -I./ -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib -lmgl -lstdc++
+compilerOpts.linux = -I./ -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib -lmgl -lstdc++
 
 ---
