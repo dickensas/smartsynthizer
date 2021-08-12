@@ -10,6 +10,17 @@ install:
 - sh: sudo apt-get -y install libx11-dev libwayland-dev libpng-dev
 - sh: sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3
 - sh: sudo apt-get -y install libglew-dev libc6-dev
+- sh: sudo apt-get -y install libpng++-dev libpng-dev libpng16-16 
+- sh: sudo apt-get -y install libjpeg-dev libjpeg62 libjpeg8 libjpeg8-dev
+- sh: sudo apt-get -y install libjpeg9 libjpeg9-dev
+- sh: sudo apt-get -y install libspectre-dev libspectre1
+- sh: sudo apt-get -y install librsvg2-2 librsvg2-dev
+- sh: sudo apt-get -y install libpixman-1-0 libpixman-1-dev
+- sh: sudo apt-get -y install libxcb-shm0 libxcb-shm0-dev
+- sh: sudo apt-get -y install cairo-5c
+- sh: sudo apt-get -y install libicu-dev libthai-dev
+- sh: sudo apt-get -y install libfribidi-dev
+- sh: sudo apt-get -y install libvulkan-dev libvulkan1
 - sh: sudo python3 -m pip install meson
 - sh: sudo python3 -m pip install ninja
 - sh: sudo python3 -m pip install cmake
@@ -45,7 +56,7 @@ install:
 - sh: sudo git clone https://github.com/GNOME/gtk.git build/gtk4
 - sh: sudo git --work-tree=build/gtk4 --git-dir=build/gtk4/.git checkout tags/4.2.1 -b 4.2.1
 - sh: sudo mkdir build/gtk4/_build
-- sh: sudo meson -Dprefix=/usr -Dvulkan=enabled -Dwayland-backend=false -Dbroadway-backend=true -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
+- sh: sudo meson -Dprefix=/usr -Dvulkan=enabled -Dx11-backend=false -Dwayland-backend=false -Dbroadway-backend=false -Dprint-backends=none -Dman-pages=false -Dgtk_doc=false -Ddemos=false -Dmedia=ffmpeg -Dbuild-examples=false -Dbuild-tests=false -Dinstall-tests=false build/gtk4/_build build/gtk4
 - sh: sudo ninja -C build/gtk4/_build -j 1
 - sh: sudo apt-get -y install mathgl
 - sh: sudo apt-get -y install libopenal-dev
