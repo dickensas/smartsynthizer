@@ -41,6 +41,9 @@ install:
 - sh: sudo apt-get -y install libvulkan-dev libvulkan1
 - sh: sudo apt-get -y install libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-dev
 - sh: sudo apt-get update
+- sh: sudo apt-get -y install libegl1-mesa libegl1-mesa-dev
+- sh: sudo apt-get -y install libgles2-mesa-dev libglfw3-dev libglfw3
+- sh: sudo apt-get -y install libglew-dev libglew2.1
 - sh: sudo apt-get -y install ffmpeg libatk1.0-dev libglm-dev iso-codes
 - sh: sudo apt-get -y install libgraphene-1.0-dev libgraphene-1.0-0 
 - sh: sudo apt-get -y install sassc hicolor-icon-theme libglib2.0-0
