@@ -54,8 +54,6 @@ kotlin {
                     "linuxX64" ->
                        includeDirs {
                           allHeaders(
-                             "${project.rootDir}",
-                             "${project.rootDir}/app",
                              "/usr/include",
                              "/usr/include/x86_64-linux-gnu"
                           )
