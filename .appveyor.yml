@@ -1,9 +1,10 @@
-image: Ubuntu
+image: Ubuntu2004
 cache:
 - /home/appveyor/.gradle/caches
 
 install:
 - sh: sudo chmod 777 gradlew
+- sh: sudo apt-get -y install openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jdk
 
 build_script:
 - sh: ./gradlew assemble --info --stacktrace --console=plain --max-workers=1 --no-daemon --build-cache -Dkotlin.colors.enabled=false
