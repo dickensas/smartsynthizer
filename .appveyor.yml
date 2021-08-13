@@ -28,15 +28,18 @@ install:
 - sh: sudo mkdir -p build/pango
 - sh: sudo mkdir -p build/vulkan
 #midi
-- sh: sudo apt-get -y install libjack-dev
+- sh: sudo apt-get -y install libjack-dev libtool bzip2 m4 automake
 - sh: sudo apt-get -y install alsa-base alsa-source alsa-tools 
 - sh: sudo apt-get -y install alsa-utils libalsaplayer-dev
 - sh: sudo mkdir -p build/rtmidi
 - sh: sudo git clone https://github.com/thestk/rtmidi.git build/rtmidi
 - sh: sudo git --work-tree=build/rtmidi --git-dir=build/rtmidi/.git checkout tags/4.0.0 -b 4.0.0
-- sh: sudo mkdir -p build/rtmidi/_build
-- sh: sudo cmake build/rtmidi -B build/rtmidi/_build -DCMAKE_INSTALL_PREFIX=/usr
-- sh: sudo cmake --build build/rtmidi/_build --target install
+- sh: sudo chmod -R 755 build
+- sh: cd build/rtmidi
+- sh: sudo ./autogen.sh
+- sh: sudo ./configure --prefix=/usr
+- sh: sudo make
+- sh: sudo make install
 
 
 build_script:
