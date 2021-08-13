@@ -86,16 +86,16 @@ install:
 #vulkan headers
 - sh: sudo git clone https://github.com/KhronosGroup/Vulkan-Headers.git build/vulkan
 - sh: sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
-- sh: sudo mkdir build/vulkan/_build
+- sh: sudo mkdir -p build/vulkan/_build
 - sh: sudo cmake build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX=/usr
 - sh: sudo cmake --build build/vulkan/_build --target install
 - sh: sudo rm -fr build/vulkan
 
 #vulkan loader
-- sh: sudo mkdir -b build/vulkan
+- sh: sudo mkdir -p build/vulkan
 - sh: sudo git clone https://github.com/KhronosGroup/Vulkan-Loader.git build/vulkan
 - sh: sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
-- sh: sudo mkdir build/vulkan/_build
+- sh: sudo mkdir -p build/vulkan/_build
 - sh: sudo cmake build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX=/usr
 - sh: sudo cmake --build build/vulkan/_build --target install
 
