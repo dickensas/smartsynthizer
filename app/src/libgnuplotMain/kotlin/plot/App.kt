@@ -144,7 +144,7 @@ fun sound_thread(mathParam: MathParam) = memScoped {
     
     var samples = ShortArray(sr.toInt())
     for(i in 0..sr-1) {
-       samples[i] = mgl_data_get_value(y,i,0,0).toInt().toShort()
+       samples[i] = _mgl_data_get_value(y,i,0,0).toInt().toShort()
     }
     
     

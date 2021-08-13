@@ -17,13 +17,25 @@ compilerOpts.linux = -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib -lmgl -
       static inline HMDT _mgl_create_data_size(int sr, int d) {
          return mgl_create_data_size(sr,d,0);
       }
+      
+      static inline mreal _mgl_data_get_value (HCDT dat, int i, int j, int k) {
+         return mgl_data_get_value(dat,i,j,k);
+      }
    #else
       static inline HMDT _mgl_create_data_size(int sr, int d) {
          return mgl_create_data_size(sr,d,0);
+      }
+      
+      static inline mreal _mgl_data_get_value (HCDT dat, int i, int j, int k) {
+         return mgl_data_get_value(dat,i,j,k);
       }
    #endif
 #elif __linux__
    static inline HMDT _mgl_create_data_size(int sr, int d) {
        return mgl_create_data_size((long)sr,d,0);
+   }
+   
+   static inline mreal _mgl_data_get_value (HCDT dat, int i, int j, int k) {
+       return mgl_data_get_value(dat,(long)i,j,k);
    }
 #endif
