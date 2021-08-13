@@ -29,6 +29,8 @@ install:
 - sh: sudo mkdir -p build/vulkan
 #midi
 - sh: sudo apt-get -y install libjack-dev
+- sh: sudo apt-get -y install alsa-base alsa-source alsa-tools 
+- sh: sudo apt-get -y install alsa-utils libalsaplayer-dev
 - sh: sudo mkdir -p build/rtmidi
 - sh: sudo git clone https://github.com/thestk/rtmidi.git build/rtmidi
 - sh: sudo git --work-tree=build/rtmidi --git-dir=build/rtmidi/.git checkout tags/4.0.0 -b 4.0.0
