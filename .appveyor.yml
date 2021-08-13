@@ -77,12 +77,27 @@ install:
 - sh: sudo apt-get -y install libspectre-dev libspectre1 libpixman-1-dev
 - sh: sudo apt-get -y install libxcb-shm0 libxcb-shm0-dev sysprof
 - sh: sudo apt-get -y install libicu-dev libthai-dev libcolord-dev
-- sh: sudo apt-get -y install libvulkan-dev libvulkan1
 - sh: sudo apt-get -y install libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-dev
 - sh: sudo apt-get -y install ffmpeg libatk1.0-dev libglm-dev iso-codes
 - sh: sudo apt-get -y install libgraphene-1.0-dev libgraphene-1.0-0 
 - sh: sudo apt-get -y install sassc hicolor-icon-theme
 - sh: sudo apt-get -y install pkg-config bison gettext xsltproc
+
+#vulkan headers
+- sh: sudo git clone https://github.com/KhronosGroup/Vulkan-Headers.git build/vulkan
+- sh: sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
+- sh: sudo mkdir build/vulkan/_build
+- sh: sudo cmake build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX=/usr
+- sh: sudo cmake --build build/vulkan/_build --target install
+- sh: sudo rm -fr build/vulkan
+
+#vulkan loader
+- sh: sudo mkdir -b build/vulkan
+- sh: sudo git clone https://github.com/KhronosGroup/Vulkan-Loader.git build/vulkan
+- sh: sudo git --work-tree=build/vulkan --git-dir=build/vulkan/.git checkout tags/v1.2.179 -b v1.2.179
+- sh: sudo mkdir build/vulkan/_build
+- sh: sudo cmake build/vulkan -B build/vulkan/_build -DCMAKE_INSTALL_PREFIX=/usr
+- sh: sudo cmake --build build/vulkan/_build --target install
 
 #rsvg
 - sh: sudo apt-get -y install librsvg2-dev
