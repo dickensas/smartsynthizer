@@ -12,3 +12,18 @@ linkerOpts.linux = -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib -lmgl -ls
 compilerOpts.linux = -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib -lmgl -lstdc++
 
 ---
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+   #ifdef _WIN64
+      static inline HMDT _mgl_create_data_size(int sr, int d) {
+         return mgl_create_data_size(sr,d,0);
+      }
+   #else
+      static inline HMDT _mgl_create_data_size(int sr, int d) {
+         return mgl_create_data_size(sr,d,0);
+      }
+   #endif
+#elif __linux__
+   static inline HMDT _mgl_create_data_size(int sr, int d) {
+       return mgl_create_data_size((long)sr,d,0);
+   }
+#endif

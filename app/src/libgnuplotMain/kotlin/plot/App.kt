@@ -102,7 +102,7 @@ fun generate_samples(mathParam: MathParam): HMDT? {
     
     var d = mathParam.d
     var sr = mathParam.sr
-    var y = mgl_create_data_size(sr.toInt(),1,0)
+    var y = _mgl_create_data_size(sr.toInt(),1)
     
     var step = mathParam.step
     .replace(oldValue= "\${key}", newValue = key.toString())
