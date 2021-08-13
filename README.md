@@ -1,4 +1,4 @@
-[https://ci.appveyor.com/api/projects/status/t8p56gga25mhxh6v?svg=true](https://ci.appveyor.com/api/projects/status/t8p56gga25mhxh6v?svg=true)
+[![Build status](https://ci.appveyor.com/api/projects/status/t8p56gga25mhxh6v?svg=true)](https://ci.appveyor.com/project/dickensas/smartsynthizer)
 
 # SmartSynthizer
 
