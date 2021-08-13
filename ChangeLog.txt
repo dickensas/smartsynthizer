@@ -1,43 +1,55 @@
+Version 1.3.0.1
+  
+  AppVeyor introduced with ubuntu 20.04
+  AppVeyor build status will display in github home
+  Remove Travis due to limited credit
+  
 Version 1.3.0.0
-Multi Track/Channel sound
+  
+  Multi Track/Channel sound
 
 Version 1.2.0.1
-Introduce Travis
-Make gradle script compatible to multiple os
+  
+  Introduce Travis
+  Make gradle script compatible to multiple os
 
 Version 1.2.0.0
-Midi port enabled with RtMIDI library
+
+  Midi port enabled with RtMIDI library
   21 as the first key of midi input
   21 is mapped to "z" in PC keyboard
   Tested with Android app
 
 Version 1.1.0.0
-MathGL graph will display on UI
+
+  MathGL graph will display on UI
 
 First Version 1.0.0.0
 
-Text boxes editable
-Window size fixed
-Window title changed
-Font size increased via CSS
-Labels made bold via CSS
+  Text boxes editable
+  Window size fixed
+  Window title changed
+  Font size increased via CSS
+  Labels made bold via CSS
+  data_cf.h removed from code
+  Instead of data_cf.h typedef introduced for bool as int
 
 First Draft 0.0.0.1
 
-The code still work in progress
+  The code still work in progress
 
-You have to press computer keyboard,
+  You have to press computer keyboard,
 
-z,s,x,d,c,v,g,b,h,n..... etc to make the notes
+  z,s,x,d,c,v,g,b,h,n..... etc to make the notes
 
-Mouse click still under progress
+  Mouse click still under progress
 
-Resizing the window will not change the size of the keyboard
+  Resizing the window will not change the size of the keyboard
 
-As of now, while the application running you have right click and copy paste the formula which could possible generate the sound which you wanted to acheive 
+  As of now, while the application running you have right click and copy paste the formula which could possible generate the sound which you wanted to acheive 
 
-only two envelopes currently you can modify, third and fourth still under progress
+  Only two envelopes currently you can modify, third and fourth still under progress
 
-only right click selectAll and copy and paste will work, typing inside the text box will not work
+  Only right click selectAll and copy and paste will work, typing inside the text box will not work
 
-data_cf.h is modifed and distributed with code due to bool data type not available in C
+  data_cf.h is modifed and distributed with code due to bool data type not available in C
