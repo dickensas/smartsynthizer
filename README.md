@@ -1,3 +1,5 @@
+[https://ci.appveyor.com/api/projects/status/t8p56gga25mhxh6v?svg=true](https://ci.appveyor.com/api/projects/status/t8p56gga25mhxh6v?svg=true)
+
 # SmartSynthizer
 
 SmartSynthizer is an initiative to do low level mathematical interface for music instruments synthesizer
