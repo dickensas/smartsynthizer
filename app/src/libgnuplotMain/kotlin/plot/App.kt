@@ -15,45 +15,10 @@ var ctx: CPointer<ALCcontext>? = null
 var app:CPointer<GtkApplication>? = null
 var keys: CPointer<GObject>? = null
 
-var ui_graph_track1: CPointer<GObject>? = null
-var ui_step_math_track1: CPointer<GObject>? = null
-var ui_sound_math_track1: CPointer<GObject>? = null
-var ui_envelop1_math_track1: CPointer<GObject>? = null
-var ui_envelop2_math_track1: CPointer<GObject>? = null
-var ui_envelop3_math_track1: CPointer<GObject>? = null
-var ui_envelop4_math_track1: CPointer<GObject>? = null
-var ui_final_math_track1: CPointer<GObject>? = null
-var ui_enable_toggle_track1: CPointer<GObject>? = null
-
-var ui_graph_track2: CPointer<GObject>? = null
-var ui_step_math_track2: CPointer<GObject>? = null
-var ui_sound_math_track2: CPointer<GObject>? = null
-var ui_envelop1_math_track2: CPointer<GObject>? = null
-var ui_envelop2_math_track2: CPointer<GObject>? = null
-var ui_envelop3_math_track2: CPointer<GObject>? = null
-var ui_envelop4_math_track2: CPointer<GObject>? = null
-var ui_final_math_track2: CPointer<GObject>? = null
-var ui_enable_toggle_track2: CPointer<GObject>? = null
-
-var ui_graph_track3: CPointer<GObject>? = null
-var ui_step_math_track3: CPointer<GObject>? = null
-var ui_sound_math_track3: CPointer<GObject>? = null
-var ui_envelop1_math_track3: CPointer<GObject>? = null
-var ui_envelop2_math_track3: CPointer<GObject>? = null
-var ui_envelop3_math_track3: CPointer<GObject>? = null
-var ui_envelop4_math_track3: CPointer<GObject>? = null
-var ui_final_math_track3: CPointer<GObject>? = null
-var ui_enable_toggle_track3: CPointer<GObject>? = null
-
-var ui_midi_combo: CPointer<GObject>? = null
+var midi_combo: CPointer<GObject>? = null
 val keyStates: HashMap<UInt, Boolean> = HashMap<UInt, Boolean>()
-var mathParamGlobal_track1: MathParam = MathParam()
-var mathParamGlobal_track2: MathParam = MathParam()
-var mathParamGlobal_track3: MathParam = MathParam()
 var midiPorts = mutableListOf<String>()
-lateinit var g_wglarea: CPointer<GtkGLArea>
 lateinit var midiPtr: RtMidiInPtr
-
 
 @ThreadLocal
 val sounds: Array<Int> = arrayOf<Int>(
@@ -69,25 +34,37 @@ val sounds: Array<Int> = arrayOf<Int>(
 ']'.code
 )
 
-data class MathParam(
-                 val step: String = "", 
-                 val sound: String = "", 
-                 val envelop1: String = "",
-                 val envelop2: String = "",
-                 val envelop3: String = "",
-                 val envelop4: String = "",
-                 val finalMath: String = "",
-                 var key: Int = 0,
-                 var sr: Int = 44100,
-                 var d: Float = 1.0f,
-                 var enable: gboolean = 0
+fun global_render_graph_callback(
+                 glarea: CPointer<GtkDrawingArea>?, 
+                 cr: CPointer<cairo_t>?,
+                 width: Int,
+                 height: Int,
+                 track: CPointer<GObject>
 )
+{
+    var trk = gtk_label_get_text(track!!.reinterpret())!!.toKString().toInt()
+    listMathUI[trk-1].render_graph(glarea, cr)
+}
+
+fun global_math_edit_toggled(track: CPointer<GObject>)
+{
+    var trk = gtk_label_get_text(g_object_get_data(track!!.reinterpret(), "track")!!.reinterpret())!!.toKString().toInt()
+    listMathUI[trk-1].toggle_edit(listMathUI[trk-1].math_toggle!!.reinterpret())
+}
+
+fun global_toggle_edit(track: CPointer<GObject>)
+{
+    var trk = gtk_label_get_text(g_object_get_data(track!!.reinterpret(), "track")!!.reinterpret())!!.toKString().toInt()
+    listMathUI[trk-1].toggle_edit(listMathUI[trk-1].enable_toggle!!.reinterpret())
+}
+
+val listMathUI = listOf<MathUI>(MathUI(),MathUI(),MathUI())
 
 var WINDOW_WIDTH = 957
 var WINDOW_HEIGHT = 124
 
 fun midi_change() {
-    val portName = gtk_combo_box_get_active_id(ui_midi_combo!!.reinterpret())
+    val portName = gtk_combo_box_get_active_id(midi_combo!!.reinterpret())
     rtmidi_close_port(midiPtr!!)
     rtmidi_open_port(
        midiPtr!!, 
@@ -96,31 +73,31 @@ fun midi_change() {
     )
 }
 
-fun generate_samples(mathParam: MathParam): HMDT? {
-    var key2 = sounds.indexOf(mathParam.key)
+fun generate_samples(math_param: MathParam): HMDT? {
+    var key2 = sounds.indexOf(math_param.key)
     val key = "${key2}".toInt()
     
-    var d = mathParam.d
-    var sr = mathParam.sr
+    var d = math_param.d
+    var sr = math_param.sr
     var y = _mgl_create_data_size(sr.toInt(),1)
     
-    var step = mathParam.step
+    var step = math_param.step
     .replace(oldValue= "\${key}", newValue = key.toString())
     .replace(oldValue= "\${d}", newValue = d.toString())
     .replace(oldValue= "\${sr}", newValue = sr.toString())
     
-    var sound = mathParam.sound
+    var sound = math_param.sound
     .replace(oldValue= "\${step}", newValue = step)
     .replace(oldValue= "\${key}", newValue = key.toString())
     .replace(oldValue= "\${d}", newValue = d.toString())
     .replace(oldValue= "\${sr}", newValue = sr.toString())
     
-    var finalMath = mathParam.finalMath
+    var finalMath = math_param.finalMath
     .replace(oldValue= "\${sound}", newValue = sound)
-    .replace(oldValue= "\${envelop1}", newValue = mathParam.envelop1)
-    .replace(oldValue= "\${envelop2}", newValue = mathParam.envelop2)
-    .replace(oldValue= "\${envelop3}", newValue = mathParam.envelop3)
-    .replace(oldValue= "\${envelop4}", newValue = mathParam.envelop4)
+    .replace(oldValue= "\${envelop1}", newValue = math_param.envelop1)
+    .replace(oldValue= "\${envelop2}", newValue = math_param.envelop2)
+    .replace(oldValue= "\${envelop3}", newValue = math_param.envelop3)
+    .replace(oldValue= "\${envelop4}", newValue = math_param.envelop4)
     .replace(oldValue= "\${step}", newValue = step)
     .replace(oldValue= "\${key}", newValue = key.toString())
     .replace(oldValue= "\${d}", newValue = d.toString())
@@ -131,16 +108,16 @@ fun generate_samples(mathParam: MathParam): HMDT? {
     return y
 }
 
-fun sound_thread(mathParam: MathParam) = memScoped {
+fun sound_thread(math_param: MathParam) = memScoped {
     initRuntimeIfNeeded()
-    if(mathParam.enable == 0) return
+    if(math_param.enable == 0) return
   
     var buf = allocArray<ALuintVar>(1)
     alGenBuffers(1, buf)
   
-    val y = generate_samples(mathParam)
+    val y = generate_samples(math_param)
     
-    var sr = mathParam.sr
+    var sr = math_param.sr
     
     var samples = ShortArray(sr.toInt())
     for(i in 0..sr-1) {
@@ -162,8 +139,8 @@ fun sound_thread(mathParam: MathParam) = memScoped {
     
     alSourcePlay(src[0])
     
-    var d = mathParam.d
-    sleep(d.toUInt())
+    var d = math_param.d
+    g_usleep((1000000 * d).toInt().toUInt())
   
     alSourcei(src[0], AL_BUFFER, 0)
     alDeleteSources(1, src)
@@ -173,159 +150,6 @@ fun sound_thread(mathParam: MathParam) = memScoped {
 fun realize_callback(
                  widget:CPointer<GtkWidget>?
 ) {
-    
-}
-
-fun render_graph_callback_track3(
-                 glarea:CPointer<GtkDrawingArea>?, 
-                 cr:CPointer<cairo_t>?
-) = memScoped {
-
-    val gr = mgl_create_graph(WINDOW_WIDTH, WINDOW_HEIGHT)
-    if(mathParamGlobal_track3==null) mathParamGlobal_track3=get_params_track3()
-    val y = generate_samples(mathParamGlobal_track3!!)
-    mgl_set_range_val(gr, "y"[0].toByte(), -15000.0, 15000.0);
-    mgl_plot(gr,y,"b","")
-    mgl_box(gr)
-    
-    var w=mgl_get_width(gr)
-    var h=mgl_get_height(gr)
-    
-    var channels = 4
-    
-    var surface_data = allocArray<UByteVar>((channels * w * h).toInt() * (sizeOf<UByteVar>()).toInt())
-    
-    var buf = mgl_get_rgba(gr);
-    platform.posix.memcpy(surface_data, buf,(channels * w * h).toULong())
-    
-    var surface = cairo_image_surface_create_for_data (surface_data, CAIRO_FORMAT_ARGB32, w, h, channels * w)
-    cairo_surface_flush(surface)
-    
-    var first = cairo_surface_create_similar(
-      cairo_get_target(cr),
-      CAIRO_CONTENT_COLOR_ALPHA, WINDOW_WIDTH, WINDOW_HEIGHT
-    )
-    
-    var first_cr = cairo_create(first)
-    cairo_set_source_rgb(first_cr, 1.0, 1.0, 1.0)
-    cairo_rectangle(first_cr, 0.0, 0.0, WINDOW_WIDTH.toDouble(), WINDOW_HEIGHT.toDouble())
-    cairo_fill(first_cr)
-  
-    cairo_set_source_surface(first_cr, surface, 0.0, 0.0);
-    cairo_paint(first_cr)
-    
-    cairo_surface_flush(surface)
-    
-    cairo_set_source_surface(cr, first, 0.0, 0.0);
-    cairo_paint(cr)
-    cairo_surface_flush(first)
-    
-    cairo_surface_destroy(first)
-    cairo_surface_destroy(surface)
-    
-    cairo_destroy(first_cr)
-    
-}
-
-fun render_graph_callback_track2(
-                 glarea:CPointer<GtkDrawingArea>?, 
-                 cr:CPointer<cairo_t>?
-) = memScoped {
-
-    val gr = mgl_create_graph(WINDOW_WIDTH, WINDOW_HEIGHT)
-    if(mathParamGlobal_track2==null) mathParamGlobal_track2=get_params_track2()
-    val y = generate_samples(mathParamGlobal_track2!!)
-    mgl_set_range_val(gr, "y"[0].toByte(), -15000.0, 15000.0);
-    mgl_plot(gr,y,"b","")
-    mgl_box(gr)
-    
-    var w=mgl_get_width(gr)
-    var h=mgl_get_height(gr)
-    
-    var channels = 4
-    
-    var surface_data = allocArray<UByteVar>((channels * w * h).toInt() * (sizeOf<UByteVar>()).toInt())
-    
-    var buf = mgl_get_rgba(gr);
-    platform.posix.memcpy(surface_data, buf,(channels * w * h).toULong())
-    
-    var surface = cairo_image_surface_create_for_data (surface_data, CAIRO_FORMAT_ARGB32, w, h, channels * w)
-    cairo_surface_flush(surface)
-    
-    var first = cairo_surface_create_similar(
-      cairo_get_target(cr),
-      CAIRO_CONTENT_COLOR_ALPHA, WINDOW_WIDTH, WINDOW_HEIGHT
-    )
-    
-    var first_cr = cairo_create(first)
-    cairo_set_source_rgb(first_cr, 1.0, 1.0, 1.0)
-    cairo_rectangle(first_cr, 0.0, 0.0, WINDOW_WIDTH.toDouble(), WINDOW_HEIGHT.toDouble())
-    cairo_fill(first_cr)
-  
-    cairo_set_source_surface(first_cr, surface, 0.0, 0.0);
-    cairo_paint(first_cr)
-    
-    cairo_surface_flush(surface)
-    
-    cairo_set_source_surface(cr, first, 0.0, 0.0);
-    cairo_paint(cr)
-    cairo_surface_flush(first)
-    
-    cairo_surface_destroy(first)
-    cairo_surface_destroy(surface)
-    
-    cairo_destroy(first_cr)
-    
-}
-
-fun render_graph_callback_track1(
-                 glarea:CPointer<GtkDrawingArea>?, 
-                 cr:CPointer<cairo_t>?
-) = memScoped {
-
-    val gr = mgl_create_graph(WINDOW_WIDTH, WINDOW_HEIGHT)
-    if(mathParamGlobal_track1==null) mathParamGlobal_track1=get_params_track1()
-    val y = generate_samples(mathParamGlobal_track1!!)
-    mgl_set_range_val(gr, "y"[0].toByte(), -15000.0, 15000.0);
-    mgl_plot(gr,y,"b","")
-    mgl_box(gr)
-    
-    var w=mgl_get_width(gr)
-    var h=mgl_get_height(gr)
-    
-    var channels = 4
-    
-    var surface_data = allocArray<UByteVar>((channels * w * h).toInt() * (sizeOf<UByteVar>()).toInt())
-    
-    var buf = mgl_get_rgba(gr);
-    platform.posix.memcpy(surface_data, buf,(channels * w * h).toULong())
-    
-    var surface = cairo_image_surface_create_for_data (surface_data, CAIRO_FORMAT_ARGB32, w, h, channels * w)
-    cairo_surface_flush(surface)
-    
-    var first = cairo_surface_create_similar(
-      cairo_get_target(cr),
-      CAIRO_CONTENT_COLOR_ALPHA, WINDOW_WIDTH, WINDOW_HEIGHT
-    )
-    
-    var first_cr = cairo_create(first)
-    cairo_set_source_rgb(first_cr, 1.0, 1.0, 1.0)
-    cairo_rectangle(first_cr, 0.0, 0.0, WINDOW_WIDTH.toDouble(), WINDOW_HEIGHT.toDouble())
-    cairo_fill(first_cr)
-  
-    cairo_set_source_surface(first_cr, surface, 0.0, 0.0);
-    cairo_paint(first_cr)
-    
-    cairo_surface_flush(surface)
-    
-    cairo_set_source_surface(cr, first, 0.0, 0.0);
-    cairo_paint(cr)
-    cairo_surface_flush(first)
-    
-    cairo_surface_destroy(first)
-    cairo_surface_destroy(surface)
-    
-    cairo_destroy(first_cr)
     
 }
 
@@ -401,86 +225,6 @@ style = style + """
     if( rsvg_handle_render_cairo ( handle, cr ) != 1 )
         throw Error( "Drawing failed" )  
 }
-fun get_params_track1(keyval: Int = 0): MathParam {
-    return MathParam (
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_step_math_track1!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_sound_math_track1!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop1_math_track1!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop2_math_track1!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop3_math_track1!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop4_math_track1!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_final_math_track1!!.reinterpret())
-            )!!.toKString(),
-            key = keyval.toInt()
-        )
-}
-
-fun get_params_track2(keyval: Int = 0): MathParam {
-    return MathParam (
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_step_math_track2!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_sound_math_track2!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop1_math_track2!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop2_math_track2!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop3_math_track2!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop4_math_track2!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_final_math_track2!!.reinterpret())
-            )!!.toKString(),
-            keyval.toInt()
-        )
-}
-
-fun get_params_track3(keyval: Int = 0): MathParam {
-    return MathParam (
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_step_math_track3!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_sound_math_track3!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop1_math_track3!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop2_math_track3!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop3_math_track3!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_envelop4_math_track3!!.reinterpret())
-            )!!.toKString(),
-            gtk_entry_buffer_get_text(
-              gtk_entry_get_buffer(ui_final_math_track3!!.reinterpret())
-            )!!.toKString(),
-            keyval.toInt()
-        )
-}
 
 fun key_pressed (
                  controller: CPointer<GtkEventController>,
@@ -494,28 +238,8 @@ fun key_pressed (
     if(!(isKey==true) 
         && sounds.indexOf(keyval.toInt())!=-1 
         && sounds.indexOf(keyval.toInt())<sounds.size){
-        mathParamGlobal_track1 = get_params_track1(keyval.toInt())
-        mathParamGlobal_track1.enable = gtk_toggle_button_get_active(ui_enable_toggle_track1!!.reinterpret())
-        mathParamGlobal_track2 = get_params_track2(keyval.toInt())
-        mathParamGlobal_track2.enable = gtk_toggle_button_get_active(ui_enable_toggle_track2!!.reinterpret())
-        mathParamGlobal_track3 = get_params_track3(keyval.toInt())
-        mathParamGlobal_track3.enable = gtk_toggle_button_get_active(ui_enable_toggle_track3!!.reinterpret())
-        
-        val worker1 = Worker.start(true, "worker1")
-        val worker2 = Worker.start(true, "worker2")
-        val worker3 = Worker.start(true, "worker3")
-        
-        worker1.execute(TransferMode.UNSAFE, { mathParamGlobal_track1 }) { data ->
-            sound_thread(data!!)
-            null
-        }
-        worker2.execute(TransferMode.UNSAFE, { mathParamGlobal_track2 }) { data ->
-            sound_thread(data!!)
-            null
-        }
-        worker3.execute(TransferMode.UNSAFE, { mathParamGlobal_track3 }) { data ->
-            sound_thread(data!!)
-            null
+        for(i in 0..listMathUI.size-1) {
+            listMathUI[i].start_sound_thread(keyval.toInt())
         }
     }
     
@@ -547,166 +271,6 @@ fun key_released (
     return GDK_EVENT_PROPAGATE
 }
 
-fun toggle_edit_track3(togglebutton: CPointer<GtkToggleButton>) {
-    var button_state = gtk_toggle_button_get_active(togglebutton);
-    
-    gtk_widget_set_focusable(ui_step_math_track3!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_step_math_track3!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_step_math_track3!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_sound_math_track3!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_sound_math_track3!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_sound_math_track3!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop1_math_track3!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop1_math_track3!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop1_math_track3!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop2_math_track3!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop2_math_track3!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop2_math_track3!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop3_math_track3!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop3_math_track3!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop3_math_track3!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop4_math_track3!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop4_math_track3!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop4_math_track3!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_final_math_track3!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_final_math_track3!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_final_math_track3!!.reinterpret(), button_state)
-    
-    mathParamGlobal_track3=get_params_track3()
-    
-    gtk_widget_queue_draw(ui_graph_track3!!.reinterpret())
-}
-
-fun toggle_edit_track2(togglebutton: CPointer<GtkToggleButton>) {
-    var button_state = gtk_toggle_button_get_active(togglebutton);
-    
-    gtk_widget_set_focusable(ui_step_math_track2!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_step_math_track2!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_step_math_track2!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_sound_math_track2!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_sound_math_track2!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_sound_math_track2!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop1_math_track2!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop1_math_track2!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop1_math_track2!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop2_math_track2!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop2_math_track2!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop2_math_track2!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop3_math_track2!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop3_math_track2!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop3_math_track2!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop4_math_track2!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop4_math_track2!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop4_math_track2!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_final_math_track2!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_final_math_track2!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_final_math_track2!!.reinterpret(), button_state)
-    
-    mathParamGlobal_track2=get_params_track2()
-    
-    gtk_widget_queue_draw(ui_graph_track2!!.reinterpret())
-}
-
-fun toggle_edit_track1(togglebutton: CPointer<GtkToggleButton>) {
-    var button_state = gtk_toggle_button_get_active(togglebutton);
-    
-    gtk_widget_set_focusable(ui_step_math_track1!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_step_math_track1!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_step_math_track1!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_sound_math_track1!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_sound_math_track1!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_sound_math_track1!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop1_math_track1!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop1_math_track1!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop1_math_track1!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop2_math_track1!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop2_math_track1!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop2_math_track1!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop3_math_track1!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop3_math_track1!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop3_math_track1!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_envelop4_math_track1!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_envelop4_math_track1!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_envelop4_math_track1!!.reinterpret(), button_state)
-    
-    gtk_widget_set_focusable(ui_final_math_track1!!.reinterpret(), button_state)
-    gtk_widget_set_can_focus(ui_final_math_track1!!.reinterpret(), button_state)
-    gtk_editable_set_editable(ui_final_math_track1!!.reinterpret(), button_state)
-    
-    mathParamGlobal_track1=get_params_track1()
-    
-    gtk_widget_queue_draw(ui_graph_track1!!.reinterpret())
-}
-
-fun enable_toggled_track1(
-                 togglebutton: CPointer<GtkToggleButton>, 
-                 text_label: CPointer<GtkLabel>
-)
-{
-    if(mathParamGlobal_track1!=null) {
-        mathParamGlobal_track1.enable = gtk_toggle_button_get_active(togglebutton)
-    } 
-}
-
-fun enable_toggled_track2(
-                 togglebutton: CPointer<GtkToggleButton>, 
-                 text_label: CPointer<GtkLabel>
-)
-{
-    if(mathParamGlobal_track2!=null) 
-        mathParamGlobal_track2.enable = gtk_toggle_button_get_active(togglebutton) 
-}
-
-fun enable_toggled_track3(
-                 togglebutton: CPointer<GtkToggleButton>, 
-                 text_label: CPointer<GtkLabel>
-)
-{
-    if(mathParamGlobal_track3!=null) 
-        mathParamGlobal_track3.enable = gtk_toggle_button_get_active(togglebutton) 
-}
-
-fun math_edit_toggled_track1(
-                 togglebutton: CPointer<GtkToggleButton>, 
-                 text_label: CPointer<GtkLabel>
-)
-{
-    toggle_edit_track1(togglebutton)
-}
-
-fun math_edit_toggled_track2(
-                 togglebutton: CPointer<GtkToggleButton>, 
-                 text_label: CPointer<GtkLabel>
-)
-{
-    toggle_edit_track2(togglebutton)
-}
-
-fun math_edit_toggled_track3(
-                 togglebutton: CPointer<GtkToggleButton>, 
-                 text_label: CPointer<GtkLabel>
-)
-{
-    toggle_edit_track3(togglebutton)
-}
-
 fun activate_callback(app:CPointer<GtkApplication>?) {
     
     var builder = gtk_builder_new_from_file ("glade/window_main.glade")
@@ -721,165 +285,16 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
                                GTK_STYLE_PROVIDER_PRIORITY_USER);
 
     keys = gtk_builder_get_object(builder, "keyboard_keys")
+    for(i in 1..listMathUI.size) {
+       listMathUI[i-1].track = i
+       listMathUI[i-1].init(builder!!.reinterpret())
+    }
     
-    ui_graph_track1 = gtk_builder_get_object(builder, "math_graph_track1")
-    ui_step_math_track1 = gtk_builder_get_object(builder, "step_math_track1")
-    ui_sound_math_track1 = gtk_builder_get_object(builder, "sound_math_track1")
-    ui_envelop1_math_track1 = gtk_builder_get_object(builder, "envelop1_math_track1")
-    ui_envelop2_math_track1 = gtk_builder_get_object(builder, "envelop2_math_track1")
-    ui_envelop3_math_track1 = gtk_builder_get_object(builder, "envelop3_math_track1")
-    ui_envelop4_math_track1 = gtk_builder_get_object(builder, "envelop4_math_track1")
-    ui_final_math_track1 = gtk_builder_get_object(builder, "final_math_track1")
-    
-    var ui_math_toggle_track1 = gtk_builder_get_object(builder, "math_toggle_track1")
-    
-    toggle_edit_track1(ui_math_toggle_track1!!.reinterpret())
-    
-    g_signal_connect_data (
-        ui_math_toggle_track1!!.reinterpret(), 
-        "toggled", 
-        staticCFunction {
-            togglebutton: CPointer<GtkToggleButton>, 
-            text_label: CPointer<GtkLabel>
-            -> math_edit_toggled_track1(togglebutton, text_label)
-        }.reinterpret(),
-        ui_math_toggle_track1!!.reinterpret(), 
-        null, 
-        0u
-    )
-    
-    ui_enable_toggle_track1 = gtk_builder_get_object(builder, "enable_toggle_track1")
-    g_signal_connect_data (
-        ui_enable_toggle_track1!!.reinterpret(), 
-        "toggled", 
-        staticCFunction {
-            togglebutton: CPointer<GtkToggleButton>, 
-            text_label: CPointer<GtkLabel>
-            -> enable_toggled_track1(togglebutton, text_label)
-        }.reinterpret(),
-        ui_enable_toggle_track1!!.reinterpret(), 
-        null, 
-        0u
-    )
+    midi_combo = gtk_builder_get_object(builder, "midi_combo")
+    var about_page = gtk_builder_get_object(builder, "about_page")
     
     gtk_drawing_area_set_draw_func(
-        ui_graph_track1!!.reinterpret(),
-        staticCFunction {
-            glarea: CPointer<GtkDrawingArea>?,
-            cr: CPointer<cairo_t>?
-            -> render_graph_callback_track1 ( glarea, cr )
-        }.reinterpret(),
-        null, 
-        null
-    )
-    
-    ui_graph_track2 = gtk_builder_get_object(builder, "math_graph_track2")
-    ui_step_math_track2 = gtk_builder_get_object(builder, "step_math_track2")
-    ui_sound_math_track2 = gtk_builder_get_object(builder, "sound_math_track2")
-    ui_envelop1_math_track2 = gtk_builder_get_object(builder, "envelop1_math_track2")
-    ui_envelop2_math_track2 = gtk_builder_get_object(builder, "envelop2_math_track2")
-    ui_envelop3_math_track2 = gtk_builder_get_object(builder, "envelop3_math_track2")
-    ui_envelop4_math_track2 = gtk_builder_get_object(builder, "envelop4_math_track2")
-    ui_final_math_track2 = gtk_builder_get_object(builder, "final_math_track2")
-    
-    var ui_math_toggle_track2 = gtk_builder_get_object(builder, "math_toggle_track2")
-    
-    toggle_edit_track2(ui_math_toggle_track2!!.reinterpret())
-    
-    g_signal_connect_data (
-        ui_math_toggle_track2!!.reinterpret(), 
-        "toggled", 
-        staticCFunction {
-            togglebutton: CPointer<GtkToggleButton>, 
-            text_label: CPointer<GtkLabel>
-            -> math_edit_toggled_track2(togglebutton, text_label)
-        }.reinterpret(),
-        ui_math_toggle_track2!!.reinterpret(), 
-        null, 
-        0u
-    )
-    
-    ui_enable_toggle_track2 = gtk_builder_get_object(builder, "enable_toggle_track2")
-    g_signal_connect_data (
-        ui_enable_toggle_track2!!.reinterpret(), 
-        "toggled", 
-        staticCFunction {
-            togglebutton: CPointer<GtkToggleButton>, 
-            text_label: CPointer<GtkLabel>
-            -> enable_toggled_track2(togglebutton, text_label)
-        }.reinterpret(),
-        ui_enable_toggle_track2!!.reinterpret(), 
-        null, 
-        0u
-    )
-    
-    gtk_drawing_area_set_draw_func(
-        ui_graph_track2!!.reinterpret(),
-        staticCFunction {
-            glarea: CPointer<GtkDrawingArea>?,
-            cr: CPointer<cairo_t>?
-            -> render_graph_callback_track2 ( glarea, cr )
-        }.reinterpret(),
-        null, 
-        null
-    )
-    
-    ui_graph_track3 = gtk_builder_get_object(builder, "math_graph_track3")
-    ui_step_math_track3 = gtk_builder_get_object(builder, "step_math_track3")
-    ui_sound_math_track3 = gtk_builder_get_object(builder, "sound_math_track3")
-    ui_envelop1_math_track3 = gtk_builder_get_object(builder, "envelop1_math_track3")
-    ui_envelop2_math_track3 = gtk_builder_get_object(builder, "envelop2_math_track3")
-    ui_envelop3_math_track3 = gtk_builder_get_object(builder, "envelop3_math_track3")
-    ui_envelop4_math_track3 = gtk_builder_get_object(builder, "envelop4_math_track3")
-    ui_final_math_track3 = gtk_builder_get_object(builder, "final_math_track3")
-    
-    var ui_math_toggle_track3 = gtk_builder_get_object(builder, "math_toggle_track3")
-    
-    toggle_edit_track3(ui_math_toggle_track3!!.reinterpret())
-    
-    g_signal_connect_data (
-        ui_math_toggle_track3!!.reinterpret(), 
-        "toggled", 
-        staticCFunction {
-            togglebutton: CPointer<GtkToggleButton>, 
-            text_label: CPointer<GtkLabel>
-            -> math_edit_toggled_track3(togglebutton, text_label)
-        }.reinterpret(),
-        ui_math_toggle_track3!!.reinterpret(), 
-        null, 
-        0u
-    )
-    
-    ui_enable_toggle_track3 = gtk_builder_get_object(builder, "enable_toggle_track3")
-    g_signal_connect_data (
-        ui_enable_toggle_track3!!.reinterpret(), 
-        "toggled", 
-        staticCFunction {
-            togglebutton: CPointer<GtkToggleButton>, 
-            text_label: CPointer<GtkLabel>
-            -> enable_toggled_track3(togglebutton, text_label)
-        }.reinterpret(),
-        ui_enable_toggle_track3!!.reinterpret(), 
-        null, 
-        0u
-    )
-    
-    gtk_drawing_area_set_draw_func(
-        ui_graph_track3!!.reinterpret(),
-        staticCFunction {
-            glarea: CPointer<GtkDrawingArea>?,
-            cr: CPointer<cairo_t>?
-            -> render_graph_callback_track3 ( glarea, cr )
-        }.reinterpret(),
-        null, 
-        null
-    )
-    
-    ui_midi_combo = gtk_builder_get_object(builder, "midi_combo")
-    var ui_about_page = gtk_builder_get_object(builder, "about_page")
-    
-    gtk_drawing_area_set_draw_func(
-        ui_about_page!!.reinterpret(),
+        about_page!!.reinterpret(),
         staticCFunction {
             glarea: CPointer<GtkDrawingArea>?, 
             cr: CPointer<cairo_t>?
@@ -900,14 +315,10 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
         null
     )
     
-    
-    
     var keyboard_controller = gtk_event_controller_key_new()
     var focus_controller = gtk_event_controller_focus_new()
     var motion_controller = gtk_gesture_click_new()
     gtk_gesture_single_set_button (motion_controller!!.reinterpret(), 1);
-    
-    
     
     g_object_set_data_full (
         window!!.reinterpret(), 
@@ -1011,10 +422,6 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
         motion_controller!!.reinterpret()
     )
     
-    mathParamGlobal_track1=get_params_track1()
-    mathParamGlobal_track2=get_params_track2()
-    mathParamGlobal_track3=get_params_track3()
-    
     midiPtr = rtmidi_in_create_default()!!
     
     rtmidi_in_set_callback(midiPtr, staticCFunction {  
@@ -1032,7 +439,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     for(i in 0..c.toInt()-1){
         var portName = rtmidi_get_port_name(midiPtr, i.toUInt())!!.toKString()
         gtk_combo_box_text_append(
-           ui_midi_combo!!.reinterpret(),
+           midi_combo!!.reinterpret(),
            i.toString(),
            portName
         )
@@ -1040,7 +447,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     }
     
     g_signal_connect_data (
-    ui_midi_combo!!.reinterpret(), 
+    midi_combo!!.reinterpret(), 
     "notify::active", 
     staticCFunction<Unit> {
       midi_change()
@@ -1076,31 +483,8 @@ fun shutdown_callback(app:CPointer<GtkApplication>?) {
 
 fun midi_idle (data: gpointer): gboolean {
     var key: CPointer<IntVar> = data!!.reinterpret()
-
-    mathParamGlobal_track1 = get_params_track1(key[0].toInt())
-    mathParamGlobal_track1.enable = gtk_toggle_button_get_active(ui_enable_toggle_track1!!.reinterpret())
-    mathParamGlobal_track2 = get_params_track2(key[0].toInt())
-    mathParamGlobal_track2.enable = gtk_toggle_button_get_active(ui_enable_toggle_track2!!.reinterpret())
-    mathParamGlobal_track3 = get_params_track3(key[0].toInt())
-    mathParamGlobal_track3.enable = gtk_toggle_button_get_active(ui_enable_toggle_track3!!.reinterpret())
-
-    val worker1 = Worker.start(true, "worker_midi_1")
-    val worker2 = Worker.start(true, "worker_midi_2")
-    val worker3 = Worker.start(true, "worker_midi_3")
-    
-    worker1.execute(TransferMode.UNSAFE, { mathParamGlobal_track1 }) { data ->
-        sound_thread(data!!)
-        null
-    }
-    
-    worker2.execute(TransferMode.UNSAFE, { mathParamGlobal_track2 }) { data ->
-        sound_thread(data!!)
-        null
-    }
-    
-    worker3.execute(TransferMode.UNSAFE, { mathParamGlobal_track3 }) { data ->
-        sound_thread(data!!)
-        null
+    for(i in 0..listMathUI.size) {
+        listMathUI[i].start_sound_thread(key[0].toInt())
     }
 
     return G_SOURCE_REMOVE

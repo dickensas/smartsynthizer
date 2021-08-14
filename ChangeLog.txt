@@ -1,5 +1,9 @@
 Version 1.3.0.1
   
+  Major class refactoring
+  
+Version 1.3.0.1
+  
   AppVeyor introduced with ubuntu 20.04
   AppVeyor build status will display in github home
   Remove Travis due to limited credit
