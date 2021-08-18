@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkFixed" id="settings_page">
+    <property name="can-focus">0</property>
+  </object>
+</interface>

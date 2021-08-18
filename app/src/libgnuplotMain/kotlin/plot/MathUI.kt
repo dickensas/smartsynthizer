@@ -58,7 +58,7 @@ class MathUI {
             "toggled", 
             staticCFunction {
                 track: CPointer<GObject>
-                -> global_toggle_edit (track)
+                -> global_math_enable_toggled (track)
             }.reinterpret(),
             enable_toggle!!.reinterpret(), 
             null, 
@@ -118,9 +118,8 @@ class MathUI {
         gtk_widget_queue_draw(graph!!.reinterpret())
     }
     
-    fun enable_toggled(
-                 togglebutton: CPointer<GtkToggleButton>, 
-                 text_label: CPointer<GtkLabel>
+    fun toggle_enable(
+                 togglebutton: CPointer<GtkToggleButton>
     )
     {
         if(math_param!=null) {

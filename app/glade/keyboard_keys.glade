@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkDrawingArea" id="keyboard_keys">
+    <property name="visible">True</property>
+    <property name="can-focus">True</property>
+    <property name="receives-default">True</property>
+    <property name="halign">fill</property>
+    <property name="valign">start</property>
+    <property name="height-request">124</property>
+  </object>
+</interface>

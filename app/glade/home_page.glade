@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- start GtkBox for stack2 -->
+  <object class="GtkBox" id="box_home">
+    <property name="can-focus">True</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <!-- start GtkStackSwitcher for stack2 -->
+      <object class="GtkStackSwitcher">
+        <property name="can-focus">True</property>
+        <property name="stack">track_content</property>
+      </object>
+    </child>
+    <child>
+      <!-- start GtkStack track1_content for stack2 -->
+      <object class="GtkStack" id="track_content">
+        <property name="can-focus">True</property>
+        <child><placeholder/></child>
+      </object>
+    </child>
+  </object>
+</interface>

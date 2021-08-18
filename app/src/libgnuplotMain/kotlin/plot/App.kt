@@ -52,13 +52,13 @@ fun global_math_edit_toggled(track: CPointer<GObject>)
     listMathUI[trk-1].toggle_edit(listMathUI[trk-1].math_toggle!!.reinterpret())
 }
 
-fun global_toggle_edit(track: CPointer<GObject>)
+fun global_math_enable_toggled(track: CPointer<GObject>)
 {
     var trk = gtk_label_get_text(g_object_get_data(track!!.reinterpret(), "track")!!.reinterpret())!!.toKString().toInt()
-    listMathUI[trk-1].toggle_edit(listMathUI[trk-1].enable_toggle!!.reinterpret())
+    listMathUI[trk-1].toggle_enable(listMathUI[trk-1].enable_toggle!!.reinterpret())
 }
 
-val listMathUI = listOf<MathUI>(MathUI(),MathUI(),MathUI())
+val listMathUI = listOf<MathUI>(MathUI(),MathUI(),MathUI(),MathUI())
 
 var WINDOW_WIDTH = 957
 var WINDOW_HEIGHT = 124
@@ -103,7 +103,7 @@ fun generate_samples(math_param: MathParam): HMDT? {
     .replace(oldValue= "\${d}", newValue = d.toString())
     .replace(oldValue= "\${sr}", newValue = sr.toString())
     
-    mgl_data_modify(y, finalMath ,0);
+    mgl_data_modify(y, finalMath ,0)
         
     return y
 }
@@ -158,7 +158,7 @@ fun render_about_page_callback(
                  cr: CPointer<cairo_t>?
 ) = memScoped {
     var error = alloc<CPointerVar<GError>>()
-    var handle = rsvg_handle_new_from_file ("svg/about.svg", error.ptr);
+    var handle = rsvg_handle_new_from_file ("svg/about.svg", error.ptr)
     if(error.value!=null)
         throw Error("unable to process about.svg " + error.value)
     if(handle==null)
@@ -173,7 +173,7 @@ fun render_callback(
 ) = memScoped {
 
     var error = alloc<CPointerVar<GError>>()
-    var handle = rsvg_handle_new_from_file ("svg/key_white.svg", error.ptr);
+    var handle = rsvg_handle_new_from_file ("svg/key_white.svg", error.ptr)
     if(error.value!=null)
         throw Error("unable to process key_white.svg " + error.value)
     if(handle==null)
@@ -218,7 +218,7 @@ style = style + """
     
     rsvg_handle_set_stylesheet (handle, styleObj, 
                             bytes.size.toULong(),
-                            error.ptr);
+                            error.ptr)
     if(error.value!=null)
         throw Error("unable to process css for svg")
 
@@ -275,14 +275,63 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     
     var builder = gtk_builder_new_from_file ("glade/window_main.glade")
     var window = gtk_builder_get_object(builder, "window_main")
+    var main_content = gtk_builder_get_object(builder, "main_content")
     gtk_window_set_application (window!!.reinterpret(), app)
+    
+    memScoped {
+      gtk_builder_add_from_file(builder, "glade/home_page.glade", null)
+      var box = gtk_builder_get_object(builder, "box_home")
+      var page = gtk_stack_add_child (main_content!!.reinterpret(), box!!.reinterpret())
+      gtk_stack_page_set_title(page!!.reinterpret(), "Home")
 
-    var provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_path(provider, "css/theme.css");
+      var track_stack = gtk_builder_get_object(builder, "track_content")
+
+      for(i in 1..listMathUI.size) {
+        gtk_builder_add_from_file(builder, "glade/track${i}.glade", null)
+        var synth_box = gtk_builder_get_object(builder, "synth_box_track${i}")
+        var track = gtk_stack_add_child (track_stack!!.reinterpret(), synth_box!!.reinterpret())
+        gtk_stack_page_set_title(track!!.reinterpret(), "Track${i}")
+      }
+      
+      gtk_builder_add_from_file(builder, "glade/keyboard_keys.glade", null)
+      var keyboard_keys = gtk_builder_get_object(builder, "keyboard_keys")
+      gtk_box_append(box!!.reinterpret(), keyboard_keys!!.reinterpret())
+
+    }
+    
+    memScoped {
+      
+      gtk_builder_add_from_file(builder, "glade/midi_page.glade", null)
+      var box = gtk_builder_get_object(builder, "midi_page")
+      var page = gtk_stack_add_child (main_content!!.reinterpret(), box!!.reinterpret())
+      gtk_stack_page_set_title(page!!.reinterpret(), "Midi")
+
+    }
+    
+    memScoped {
+      
+      gtk_builder_add_from_file(builder, "glade/settings_page.glade", null)
+      var box = gtk_builder_get_object(builder, "settings_page")
+      var page = gtk_stack_add_child (main_content!!.reinterpret(), box!!.reinterpret())
+      gtk_stack_page_set_title(page!!.reinterpret(), "Settings")
+
+    }
+    
+    memScoped {
+
+      gtk_builder_add_from_file(builder, "glade/about_page.glade", null)
+      var box = gtk_builder_get_object(builder, "about_page")
+      var page = gtk_stack_add_child (main_content!!.reinterpret(), box!!.reinterpret())
+      gtk_stack_page_set_title(page!!.reinterpret(), "About")
+
+    }
+
+    var provider = gtk_css_provider_new()
+    gtk_css_provider_load_from_path(provider, "css/theme.css")
     gtk_style_context_add_provider_for_display(
                                gtk_widget_get_display(window.reinterpret()),
                                provider!!.reinterpret(),
-                               GTK_STYLE_PROVIDER_PRIORITY_USER);
+                               GTK_STYLE_PROVIDER_PRIORITY_USER)
 
     keys = gtk_builder_get_object(builder, "keyboard_keys")
     for(i in 1..listMathUI.size) {
@@ -318,7 +367,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     var keyboard_controller = gtk_event_controller_key_new()
     var focus_controller = gtk_event_controller_focus_new()
     var motion_controller = gtk_gesture_click_new()
-    gtk_gesture_single_set_button (motion_controller!!.reinterpret(), 1);
+    gtk_gesture_single_set_button (motion_controller!!.reinterpret(), 1)
     
     g_object_set_data_full (
         window!!.reinterpret(), 
@@ -454,7 +503,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     }, 
     null,
     null, 
-    0u);
+    0u)
 
     g_object_unref(builder)
     gtk_widget_show (window.reinterpret())

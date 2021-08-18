@@ -1,4 +1,9 @@
-Version 1.3.0.1
+Version 1.3.0.3
+  
+  Multiple glade files with scrolling UI
+  MathGL Url added in About Page
+  
+Version 1.3.0.2
   
   Major class refactoring
   

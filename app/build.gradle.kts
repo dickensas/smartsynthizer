@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "in.co.dickens.music"
-version = "1.3.0.2"
+version = "1.3.0.3"
 
 repositories {
     mavenCentral()
