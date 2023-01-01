@@ -476,7 +476,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     rtmidi_in_set_callback(midiPtr, staticCFunction {  
             timeStamp: Double, 
             message: CArrayPointer<UByteVar>,
-            messageSize: size_t, 
+            messageSize: size_tt, 
             userData: COpaquePointerVar
             -> midi_callback( timeStamp, message, messageSize, userData  )
         }.reinterpret(),
@@ -484,15 +484,18 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
     )
 
     var c = rtmidi_get_port_count(midiPtr)
-    
-    for(i in 0..c.toInt()-1){
-        var portName = rtmidi_get_port_name(midiPtr, i.toUInt())!!.toKString()
-        gtk_combo_box_text_append(
-           midi_combo!!.reinterpret(),
-           i.toString(),
-           portName
-        )
-        midiPorts.add(portName)
+    memScoped {
+	    for(i in 0..c.toInt()-1){
+	    	var bufOut = alloc<ByteVar>()
+	    	var bufLen = alloc<IntVar>()
+	        var portName = rtmidi_get_port_name(midiPtr, i.toUInt(), bufOut.ptr, bufLen.ptr)
+	        gtk_combo_box_text_append(
+	           midi_combo!!.reinterpret(),
+	           i.toString(),
+	           portName.toString()
+	        )
+	        midiPorts.add(portName.toString())
+	    }
     }
     
     g_signal_connect_data (
@@ -542,7 +545,7 @@ fun midi_idle (data: gpointer): gboolean {
 fun midi_callback(
                  timeStamp: Double, 
                  message: CArrayPointer<UByteVar>,
-                 messageSize: size_t, 
+                 messageSize: size_tt, 
                  userData: COpaquePointerVar
 ) = memScoped {
     initRuntimeIfNeeded()

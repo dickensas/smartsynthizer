@@ -1,17 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.kotlin.multiplatform") version "1.5.20"
+    id("org.jetbrains.kotlin.multiplatform") version "1.7.22"
 }
 
 group = "in.co.dickens.music"
-version = "1.3.0.3"
+version = "1.3.0.4"
 
 repositories {
     mavenCentral()
     gradlePluginPortal()
 }
-
+val userHome = File(System.getenv("USERPROFILE") ?: "")
 var currentOS = org.gradle.internal.os.OperatingSystem.current()
 var platform = "mingwx64"
 if (currentOS.isWindows()) {
@@ -38,6 +38,7 @@ kotlin {
         binaries {
             executable {
                 entryPoint = "plot.main"
+                linkerOpts("-L${userHome}\\.konan\\dependencies\\msys2-mingw-w64-x86_64-2\\x86_64-w64-mingw32\\lib", "-L${project.rootDir}")
             }
         }
         compilations["main"].cinterops {
@@ -147,8 +148,8 @@ kotlin {
     sourceSets {
         val libgnuplotMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1-native-mt")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-${platform}:1.5.1-native-mt")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3-native-mt")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-${platform}:1.6.3-native-mt")
             }
         }
     }
