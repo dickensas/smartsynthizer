@@ -140,7 +140,7 @@ fun sound_thread(math_param: MathParam) = memScoped {
     alSourcePlay(src[0])
     
     var d = math_param.d
-    g_usleep((1000000 * d).toInt().toUInt())
+    g_usleep((1000000 * d).toInt().toULong())
   
     alSourcei(src[0], AL_BUFFER, 0)
     alDeleteSources(1, src)
@@ -488,7 +488,7 @@ fun activate_callback(app:CPointer<GtkApplication>?) {
 	    for(i in 0..c.toInt()-1){
 	    	var bufOut = alloc<ByteVar>()
 	    	var bufLen = alloc<IntVar>()
-	        var portName = rtmidi_get_port_name(midiPtr, i.toUInt(), bufOut.ptr, bufLen.ptr)
+	        var portName = rtmidi_get_port_name(midiPtr, i.toUInt())
 	        gtk_combo_box_text_append(
 	           midi_combo!!.reinterpret(),
 	           i.toString(),
